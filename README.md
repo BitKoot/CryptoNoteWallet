@@ -10,6 +10,7 @@ NOTICE: Use at your own risk. This is a very early version. I'm not responsible 
 Features:
 - Show balance (locked and unlocked)
 - Open wallets with *.bin or *.wallet extension
+- Backup wallet on launch
 - Create new wallets
 - Show wallet address 
 - Copy wallet address to clipboard
@@ -18,7 +19,7 @@ Features:
 - Saved wallet and daemon on exit.
 
 Depends on:
-Json.NET - http://james.newtonking.com/json
-Extended WPF toolkit - https://wpftoolkit.codeplex.com/
-VS2012 or higher
+- Json.NET - http://james.newtonking.com/json
+- Extended WPF toolkit - https://wpftoolkit.codeplex.com/
+- VS2012 or higher
 
