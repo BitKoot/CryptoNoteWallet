@@ -40,10 +40,11 @@ namespace CryptoNoteWallet
             InitializeComponent();
 
             Title = string.Format(
-                "{0} v{1}.{2}",
+                "{0} v{1}.{2}.{3}",
                 Title,
                 Assembly.GetEntryAssembly().GetName().Version.Major, 
-                Assembly.GetEntryAssembly().GetName().Version.Minor);
+                Assembly.GetEntryAssembly().GetName().Version.Minor,
+                Assembly.GetEntryAssembly().GetName().Version.Build);
 
             int refreshInterval = int.Parse(ConfigurationManager.AppSettings["WalletRefreshInterval"]);
             int pingInterval = int.Parse(ConfigurationManager.AppSettings["DaemonPingInterval"]);
