@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace CryptoNoteWallet.Core
 {
@@ -40,7 +42,7 @@ namespace CryptoNoteWallet.Core
         /// <summary>
         /// Stop the running process.
         /// </summary>
-        public void Exit()
+        public virtual void Exit()
         {
             HandleLines = false;
 
@@ -95,37 +97,43 @@ namespace CryptoNoteWallet.Core
             }
         }
 
-        protected virtual void HandleLine(string line)
+        /// <summary>
+        /// Read the next line from the streamreader. Handle the output.
+        /// </summary>
+        /// <param name="isError">Should we read from the StandardError instead of StandardOutput?</param>
+        protected async void ReadNextLine(bool isError)
+        {
+            if (HandleLines)
+            {
+                StreamReader reader = isError ? WrapperProcess.StandardError : WrapperProcess.StandardOutput;
+
+                string line = await reader.ReadLineAsync();
+                HandleLine(line ?? string.Empty, isError);
+            }
+        }
+
+        /// <summary>
+        /// Interpret the current wallet output and call relevant event listeners.
+        /// </summary>
+        /// <param name="line">Current line.</param>
+        /// <param name="isError">Is the line read from StandardError?</param>
+        protected virtual void HandleLine(string line, bool isError)
         {
             if (OutputReceived != null)
             {
                 OutputReceived.Invoke(this, new WrapperEvent<string>(line));
             }
+
+            ReadNextLine(isError);
         }
 
         /// <summary>
         /// Write a line to the standard input.
         /// </summary>
         /// <param name="line"></param>
-        protected async void WriteLine(string line)
+        protected void WriteLine(string line)
         {
-            await WrapperProcess.StandardInput.WriteLineAsync(line);
-        }
-
-        /// <summary>
-        /// Read the next line from standard output.
-        /// </summary>
-        protected async void ReadNextLine()
-        {
-            if (HandleLines)
-            {
-                StreamReader myStreamReader = WrapperProcess.StandardOutput;
-
-                var task = myStreamReader.ReadLineAsync();
-                this.HandleLine(await task);
-
-                ReadNextLine();
-            }
+            WrapperProcess.StandardInput.WriteLine(line);
         }
     }
 }

@@ -32,8 +32,6 @@ namespace CryptoNoteWallet
         private DaemonWrapper Daemon { get; set; }
         private WalletWrapper Wallet { get; set; }
 
-        private System.Timers.Timer Timer { get; set; }
-
         private List<string> DaemonLogLines { get; set; }
         private List<string> WalletLogLines { get; set; }
 
@@ -47,32 +45,29 @@ namespace CryptoNoteWallet
                 Assembly.GetEntryAssembly().GetName().Version.Major, 
                 Assembly.GetEntryAssembly().GetName().Version.Minor);
 
-            int interval = int.Parse(ConfigurationManager.AppSettings["RefreshInterval"]);
-            Timer = new System.Timers.Timer(interval);
-            Timer.Elapsed += (s, e) => Wallet.Refresh();
-
+            int refreshInterval = int.Parse(ConfigurationManager.AppSettings["WalletRefreshInterval"]);
+            int pingInterval = int.Parse(ConfigurationManager.AppSettings["DaemonPingInterval"]);
+            
             string daemonClientExe = ConfigurationManager.AppSettings["DaemonFileName"];
             string walletClientExe = ConfigurationManager.AppSettings["WalletClientFileName"];
 
             // Initialize and start daemon.
-            Daemon = new DaemonWrapper(path, daemonClientExe);
+            Daemon = new DaemonWrapper(path, daemonClientExe, pingInterval);
             DaemonLogLines = new List<string>();
-            Daemon.OutputReceived += new EventHandler<WrapperEvent<string>>((s, e) => Dispatcher.Invoke(() => AddDaemonLogText(e.Data)));
+            Daemon.OutputReceived += new EventHandler<WrapperEvent<string>>((s, e) => Dispatcher.Invoke(() => AddLogText(e.Data, DaemonLogLines, tbDaemonOutput)));
             Daemon.Start();
 
             // Initialize and start wallet client.
-            Wallet = new WalletWrapper(path, walletClientExe, isNew);
+            Wallet = new WalletWrapper(path, walletClientExe, isNew, refreshInterval);
             WalletLogLines = new List<string>();
             Wallet.ReadyToLogin += new EventHandler<EventArgs>((s, e) => Dispatcher.Invoke(() => ShowLogin()));
             Wallet.StatusChanged += new EventHandler<WrapperEvent<string>>((s, e) => Dispatcher.Invoke(() => SetStatus(e.Data)));
             Wallet.AddressReceived += new EventHandler<WrapperEvent<string>>((s, e) => Dispatcher.Invoke(() => SetAddress(e.Data)));
-            Wallet.OutputReceived += new EventHandler<WrapperEvent<string>>((s, e) => Dispatcher.Invoke(() => AddWalletLogText(e.Data)));
+            Wallet.OutputReceived += new EventHandler<WrapperEvent<string>>((s, e) => Dispatcher.Invoke(() => AddLogText(e.Data, WalletLogLines, tbWalletClientOutput)));
             Wallet.BalanceUpdated += new EventHandler<WrapperBalanceEvent>((s, e) => Dispatcher.Invoke(() => SetBalance(e.Total, e.Unlocked)));
             Wallet.Error += new EventHandler<WrapperErrorEvent>((s, e) => Dispatcher.Invoke(() => ShowError(e.Message, e.ShouldExit)));
             Wallet.Information += new EventHandler<WrapperEvent<string>>((s, e) => Dispatcher.Invoke(() => ShowInformation(e.Data)));
             Wallet.Start();
-
-            Timer.Enabled = true;
         }
 
         /// <summary>
@@ -173,32 +168,25 @@ namespace CryptoNoteWallet
         /// Update wallet log.
         /// </summary>
         /// <param name="text"></param>
-        private void AddWalletLogText(string text)
+        private void AddLogText(string text, IList<string> LogLines, TextBox textBox)
         {
-            if (WalletLogLines.Count == 50)
+            while (LogLines.Count >= 50)
             {
-                WalletLogLines.RemoveAt(0);
+                LogLines.RemoveAt(0);
             }
-            WalletLogLines.Add(text);
 
-            tbWalletClientOutput.Text = WalletLogLines.Aggregate((l1, l2) => l1 + Environment.NewLine + l2);
-            tbWalletClientOutput.ScrollToEnd();
-        }
+            LogLines.Add(text);
 
-        /// <summary>
-        /// Update daemon log.
-        /// </summary>
-        /// <param name="text"></param>
-        private void AddDaemonLogText(string text)
-        {
-            if (DaemonLogLines.Count == 50)
+            if (LogLines.Count == 1)
             {
-                DaemonLogLines.RemoveAt(0);
+                textBox.Text = LogLines.First();
             }
-            DaemonLogLines.Add(text);
-
-            tbDaemonOutput.Text = DaemonLogLines.Aggregate((l1, l2) => l1 + Environment.NewLine + l2);
-            tbDaemonOutput.ScrollToEnd();
+            else
+            {
+                textBox.Text = LogLines.Take(LogLines.Count - 1).Aggregate((l1, l2) => l1 + Environment.NewLine + l2);
+                textBox.AppendText(LogLines.Last());
+                textBox.ScrollToEnd();
+            }
         }
 
         /// <summary>
@@ -210,7 +198,6 @@ namespace CryptoNoteWallet
             Cursor = Cursors.Wait;
             SetStatus("Waiting for daemon to exit...");
 
-            Timer.Stop();
             Wallet.Exit();
             Daemon.Exit();
 

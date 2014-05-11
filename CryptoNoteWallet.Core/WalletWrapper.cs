@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace CryptoNoteWallet.Core
 {
@@ -15,6 +16,7 @@ namespace CryptoNoteWallet.Core
     /// </summary>
     public class WalletWrapper : BaseWrapper
     {
+        private Timer RefreshTimer { get; set; }
         private bool IsNew { get; set; }
 
         public EventHandler<EventArgs> ReadyToLogin;
@@ -22,10 +24,13 @@ namespace CryptoNoteWallet.Core
         public EventHandler<WrapperEvent<string>> AddressReceived;
         public EventHandler<WrapperBalanceEvent> BalanceUpdated;
 
-        public WalletWrapper(string walletPath, string exeFileName, bool isNew)
+        public WalletWrapper(string walletPath, string exeFileName, bool isNew, int refreshInterval)
             : base(walletPath, exeFileName)
         {
             IsNew = isNew;
+
+            RefreshTimer = new Timer(refreshInterval);
+            RefreshTimer.Elapsed += (s, e) => Refresh();
         }
 
         /// <summary>
@@ -44,26 +49,37 @@ namespace CryptoNoteWallet.Core
 
             WrapperProcess = new Process();
 
-            var myProcessStartInfo = new ProcessStartInfo(ExecutablePath);
-            myProcessStartInfo.UseShellExecute = false;
-            myProcessStartInfo.RedirectStandardOutput = true;
-            myProcessStartInfo.RedirectStandardInput = true;
-            myProcessStartInfo.CreateNoWindow = true;
+            var processStartInfo = new ProcessStartInfo(ExecutablePath);
+            processStartInfo.UseShellExecute = false;
+            processStartInfo.RedirectStandardOutput = true;
+            processStartInfo.RedirectStandardInput = true;
+            processStartInfo.RedirectStandardError = true;
+            processStartInfo.CreateNoWindow = true;
 
             if (IsNew)
             {
-                myProcessStartInfo.Arguments = "--generate-new-wallet=" + WalletPath;
+                processStartInfo.Arguments = "--generate-new-wallet=" + WalletPath;
             }
             else
             {
-                myProcessStartInfo.Arguments = "--wallet-file=" + WalletPath;
+                processStartInfo.Arguments = "--wallet-file=" + WalletPath;
             }
 
-            WrapperProcess.StartInfo = myProcessStartInfo;
+            WrapperProcess.StartInfo = processStartInfo;
             WrapperProcess.Start();
 
             TaskFactory factory = new TaskFactory();
-            await factory.StartNew(this.ReadNextLine);
+            await factory.StartNew(() => ReadNextLine(false));
+            await factory.StartNew(() => ReadNextLine(true));
+
+            RefreshTimer.Start();
+        }
+
+        public override void Exit()
+        {
+            RefreshTimer.Stop();
+
+            base.Exit();
         }
 
         /// <summary>
@@ -126,7 +142,8 @@ namespace CryptoNoteWallet.Core
         /// Interpret the current wallet output and call relevant event listeners.
         /// </summary>
         /// <param name="line">Current line.</param>
-        protected override void HandleLine(string line)
+        /// <param name="isError">Is the line read from StandardError?</param>
+        protected override void HandleLine(string line, bool isError)
         {
             if (line.Contains("Opened wallet: "))
             {
@@ -198,7 +215,7 @@ namespace CryptoNoteWallet.Core
                 }
             }
 
-            base.HandleLine(line);
+            base.HandleLine(line, isError);
         }
 
         private void UpdateStatus(string status)

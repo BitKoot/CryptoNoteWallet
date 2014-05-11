@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace CryptoNoteWallet.Core
 {
@@ -15,9 +16,13 @@ namespace CryptoNoteWallet.Core
     /// </summary>
     public class DaemonWrapper : BaseWrapper
     {
-        public DaemonWrapper(string walletPath, string exeFileName)
+        private Timer PingTimer { get; set; }
+
+        public DaemonWrapper(string walletPath, string exeFileName, int pingInterval)
             : base(walletPath, exeFileName)
         {
+            PingTimer = new Timer(pingInterval);
+            PingTimer.Elapsed += (s, e) => Ping();
         }
 
         public async void Start()
@@ -29,16 +34,34 @@ namespace CryptoNoteWallet.Core
 
             WrapperProcess = new Process();
 
-            var myProcessStartInfo = new ProcessStartInfo(ExecutablePath);
-            myProcessStartInfo.UseShellExecute = false;
-            myProcessStartInfo.RedirectStandardOutput = true;
-            myProcessStartInfo.RedirectStandardInput = true;
-            myProcessStartInfo.CreateNoWindow = true;
-            WrapperProcess.StartInfo = myProcessStartInfo;
+            var processStartInfo = new ProcessStartInfo(ExecutablePath);
+            processStartInfo.UseShellExecute = false;
+            processStartInfo.RedirectStandardOutput = true;
+            processStartInfo.RedirectStandardInput = true;
+            processStartInfo.RedirectStandardError = true;
+            processStartInfo.CreateNoWindow = true;
+            WrapperProcess.StartInfo = processStartInfo;
             WrapperProcess.Start();
 
-            TaskFactory factory = new TaskFactory();
-            await factory.StartNew(this.ReadNextLine);
+            await Task.Factory.StartNew(() => ReadNextLine(false));
+            await Task.Factory.StartNew(() => ReadNextLine(true));
+
+            PingTimer.Start();
+        }
+
+        public override void Exit()
+        {
+            PingTimer.Stop();
+
+            base.Exit();
+        }
+
+        /// <summary>
+        /// Keep the daemon output up to date by entering a newline.
+        /// </summary>
+        public void Ping()
+        {
+            WriteLine(Environment.NewLine);
         }
     }
 }
