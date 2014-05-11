@@ -115,7 +115,14 @@ namespace CryptoNoteWallet
 
             Hide();
 
-            mw.ShowDialog();
+            try
+            {
+                mw.ShowDialog();
+            }
+            catch (InvalidOperationException)
+            {
+                // Catch exception when main window is closed before being opened.
+            }
 
             Close();
         }

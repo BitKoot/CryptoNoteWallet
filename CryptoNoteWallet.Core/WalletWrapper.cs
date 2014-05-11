@@ -15,21 +15,16 @@ namespace CryptoNoteWallet.Core
     /// </summary>
     public class WalletWrapper : BaseWrapper
     {
-        private string WalletPath { get; set; }
-        private string ExeFileName { get; set; }
         private bool IsNew { get; set; }
 
         public EventHandler<EventArgs> ReadyToLogin;
         public EventHandler<WrapperEvent<string>> StatusChanged;
         public EventHandler<WrapperEvent<string>> AddressReceived;
-        public EventHandler<WrapperErrorEvent> Error;
-        public EventHandler<WrapperEvent<string>> Information;
         public EventHandler<WrapperBalanceEvent> BalanceUpdated;
 
         public WalletWrapper(string walletPath, string exeFileName, bool isNew)
+            : base(walletPath, exeFileName)
         {
-            WalletPath = walletPath;
-            ExeFileName = exeFileName;
             IsNew = isNew;
         }
 
@@ -38,15 +33,18 @@ namespace CryptoNoteWallet.Core
         /// </summary>
         public async void Start()
         {
+            if (!CanStart())
+            {
+                return;
+            }
+
             Backup();
 
-            HandleLines = true;
+            HandleLines = true; 
 
-            myProcess = new Process();
+            WrapperProcess = new Process();
 
-            var myProcessStartInfo = new ProcessStartInfo(
-                System.IO.Path.Combine(System.IO.Path.GetDirectoryName(WalletPath), ExeFileName));
-
+            var myProcessStartInfo = new ProcessStartInfo(ExecutablePath);
             myProcessStartInfo.UseShellExecute = false;
             myProcessStartInfo.RedirectStandardOutput = true;
             myProcessStartInfo.RedirectStandardInput = true;
@@ -61,8 +59,8 @@ namespace CryptoNoteWallet.Core
                 myProcessStartInfo.Arguments = "--wallet-file=" + WalletPath;
             }
 
-            myProcess.StartInfo = myProcessStartInfo;
-            myProcess.Start();
+            WrapperProcess.StartInfo = myProcessStartInfo;
+            WrapperProcess.Start();
 
             TaskFactory factory = new TaskFactory();
             await factory.StartNew(this.ReadNextLine);
@@ -208,22 +206,6 @@ namespace CryptoNoteWallet.Core
             if (StatusChanged != null)
             {
                 StatusChanged.Invoke(this, new WrapperEvent<string>(status));
-            }
-        }
-
-        private void SendError(string message, bool shouldExit)
-        {
-            if (Error != null)
-            {
-                Error.Invoke(this, new WrapperErrorEvent(message, shouldExit));
-            }
-        }
-
-        private void SendInformation(string message)
-        {
-            if (Information != null)
-            {
-                Information.Invoke(this, new WrapperEvent<string>(message));
             }
         }
     }

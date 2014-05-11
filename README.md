@@ -21,5 +21,6 @@ Features:
 Depends on:
 - Json.NET - http://james.newtonking.com/json
 - Extended WPF toolkit - https://wpftoolkit.codeplex.com/
+- .NET 4.5
 - VS2012 or higher
 

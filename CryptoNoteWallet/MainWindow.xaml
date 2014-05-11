@@ -50,14 +50,14 @@
             <TabItem Header="Wallet Log">
                 <Grid>
                     <ScrollViewer>
-                        <TextBox x:Name="tbWalletClientOutput" Margin="3,0,0,0" TextWrapping="Wrap" IsEnabled="false" Foreground="Black"/>
+                        <TextBox x:Name="tbWalletClientOutput" Margin="3,0,0,0" TextWrapping="Wrap" Foreground="Black" IsReadOnly="True" IsReadOnlyCaretVisible="True" IsInactiveSelectionHighlightEnabled="True"/>
                     </ScrollViewer>
                 </Grid>
             </TabItem>
             <TabItem Header="Daemon Log">
                 <Grid>
                     <ScrollViewer>
-                        <TextBox x:Name="tbDaemonOutput" Margin="3,0,0,0" TextWrapping="Wrap" IsEnabled="false" Foreground="Black"/>
+                        <TextBox x:Name="tbDaemonOutput" Margin="3,0,0,0" TextWrapping="Wrap" IsReadOnly="True" Foreground="Black"/>
                     </ScrollViewer>
                 </Grid>
             </TabItem>

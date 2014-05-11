@@ -15,29 +15,27 @@ namespace CryptoNoteWallet.Core
     /// </summary>
     public class DaemonWrapper : BaseWrapper
     {
-        private string WalletPath { get; set; }
-        private string ExeFileName { get; set; }
-
         public DaemonWrapper(string walletPath, string exeFileName)
+            : base(walletPath, exeFileName)
         {
-            HandleLines = true;
-            WalletPath = walletPath;
-            ExeFileName = exeFileName;
         }
 
         public async void Start()
         {
-            myProcess = new Process();
+            if (!CanStart())
+            {
+                return;
+            }
 
-            var myProcessStartInfo = new ProcessStartInfo(
-                System.IO.Path.Combine(System.IO.Path.GetDirectoryName(WalletPath), ExeFileName));
+            WrapperProcess = new Process();
 
+            var myProcessStartInfo = new ProcessStartInfo(ExecutablePath);
             myProcessStartInfo.UseShellExecute = false;
             myProcessStartInfo.RedirectStandardOutput = true;
             myProcessStartInfo.RedirectStandardInput = true;
             myProcessStartInfo.CreateNoWindow = true;
-            myProcess.StartInfo = myProcessStartInfo;
-            myProcess.Start();
+            WrapperProcess.StartInfo = myProcessStartInfo;
+            WrapperProcess.Start();
 
             TaskFactory factory = new TaskFactory();
             await factory.StartNew(this.ReadNextLine);
