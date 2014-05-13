@@ -17,12 +17,19 @@ namespace CryptoNoteWallet.Core
     public class DaemonWrapper : BaseWrapper
     {
         private Timer PingTimer { get; set; }
+        private Timer ConnectionTimer { get; set; }
+        private int ConnectionCount { get; set; }
 
-        public DaemonWrapper(string walletPath, string exeFileName, int pingInterval)
+        public EventHandler<WrapperEvent<int>> ConnectionsCounted;
+
+        public DaemonWrapper(string walletPath, string exeFileName, int pingInterval, int connectionCountInterval)
             : base(walletPath, exeFileName)
         {
             PingTimer = new Timer(pingInterval);
             PingTimer.Elapsed += (s, e) => Ping();
+
+            ConnectionTimer = new Timer(connectionCountInterval);
+            ConnectionTimer.Elapsed += (s, e) => GetConnections();
         }
 
         public async void Start()
@@ -47,13 +54,7 @@ namespace CryptoNoteWallet.Core
             await Task.Factory.StartNew(() => ReadNextLine(true));
 
             PingTimer.Start();
-        }
-
-        public override void Exit()
-        {
-            PingTimer.Stop();
-
-            base.Exit();
+            ConnectionTimer.Start();
         }
 
         /// <summary>
@@ -62,6 +63,62 @@ namespace CryptoNoteWallet.Core
         public void Ping()
         {
             WriteLine(Environment.NewLine);
+        }
+
+        /// <summary>
+        /// Print a list of connections.
+        /// </summary>
+        public void GetConnections()
+        {
+            WriteLine("print_cn");
+        }
+
+        public override void Exit()
+        {
+            HandleLines = false;
+
+            PingTimer.Stop();
+            ConnectionTimer.Stop();
+
+            base.Exit();
+        }
+
+        /// <summary>
+        /// Interpret the current wallet output and call relevant event listeners.
+        /// </summary>
+        /// <param name="line">Current line.</param>
+        /// <param name="isError">Is the line read from StandardError?</param>
+        protected override void HandleLine(string line, bool isError)
+        {
+            bool isCountingConnections = false;
+
+            if (line.Contains("days) behind"))
+            {
+                Match match = Regex.Match(line, "([0-9]+) blocks\\(([0-9]+) days\\) behind");
+                if (match.Success)
+                {
+                    UpdateStatus(
+                        WalletStatus.SynchronizingBlockchain, 
+                        string.Format("Retrieving blockchain ({0} blocks / {1} days behind)", match.Groups[1].Value, match.Groups[2].Value));
+                }
+            }
+            else if (Regex.IsMatch(line, "Remote Host[\\s]+Peer id"))
+            {
+                ConnectionCount = 0;
+                isCountingConnections = true;
+            }
+            else if (Regex.IsMatch(line, "\\[OUT\\][0-9\\.:]+[\\s]+[0-9a-z]+"))
+            {
+                ConnectionCount++;
+                isCountingConnections = true;
+            }
+
+            if (!isCountingConnections && ConnectionsCounted != null)
+            {
+                ConnectionsCounted.Invoke(this, new WrapperEvent<int>(ConnectionCount));
+            }
+
+            base.HandleLine(line, isError);
         }
     }
 }

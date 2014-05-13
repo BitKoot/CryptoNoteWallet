@@ -40,6 +40,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseWrapper.cs" />
+    <Compile Include="Transaction.cs" />
+    <Compile Include="WrapperStatusEvent.cs" />
+    <Compile Include="WalletStatus.cs" />
     <Compile Include="WrapperErrorEvent.cs" />
     <Compile Include="DaemonWrapper.cs" />
     <Compile Include="WrapperBalanceEvent.cs" />

@@ -23,6 +23,7 @@ namespace CryptoNoteWallet.Core
         public EventHandler<WrapperEvent<string>> OutputReceived;
         public EventHandler<WrapperErrorEvent> Error;
         public EventHandler<WrapperEvent<string>> Information;
+        public EventHandler<WrapperStatusEvent> StatusChanged;
 
         protected string ExecutablePath
         {
@@ -94,6 +95,14 @@ namespace CryptoNoteWallet.Core
             if (Information != null)
             {
                 Information.Invoke(this, new WrapperEvent<string>(message));
+            }
+        }
+
+        protected void UpdateStatus(WalletStatus status, string message)
+        {
+            if (StatusChanged != null)
+            {
+                StatusChanged.Invoke(this, new WrapperStatusEvent(status, message));
             }
         }
 

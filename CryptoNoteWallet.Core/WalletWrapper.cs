@@ -17,16 +17,18 @@ namespace CryptoNoteWallet.Core
     public class WalletWrapper : BaseWrapper
     {
         private Timer RefreshTimer { get; set; }
+        private List<Transaction> Transactions { get; set; }
         private bool IsNew { get; set; }
 
         public EventHandler<EventArgs> ReadyToLogin;
-        public EventHandler<WrapperEvent<string>> StatusChanged;
         public EventHandler<WrapperEvent<string>> AddressReceived;
         public EventHandler<WrapperBalanceEvent> BalanceUpdated;
+        public EventHandler<WrapperEvent<IList<Transaction>>> TransactionsFetched;
 
         public WalletWrapper(string walletPath, string exeFileName, bool isNew, int refreshInterval)
             : base(walletPath, exeFileName)
         {
+            Transactions = new List<Transaction>();
             IsNew = isNew;
 
             RefreshTimer = new Timer(refreshInterval);
@@ -77,6 +79,8 @@ namespace CryptoNoteWallet.Core
 
         public override void Exit()
         {
+            HandleLines = false;
+
             RefreshTimer.Stop();
 
             base.Exit();
@@ -128,6 +132,7 @@ namespace CryptoNoteWallet.Core
         public void Refresh()
         {
             WriteLine("refresh");
+            WriteLine("incoming_transfers");
         }
 
         /// <summary>
@@ -145,6 +150,8 @@ namespace CryptoNoteWallet.Core
         /// <param name="isError">Is the line read from StandardError?</param>
         protected override void HandleLine(string line, bool isError)
         {
+            bool isFetchingTransactions = false;
+
             if (line.Contains("Opened wallet: "))
             {
                 string address = line.Substring("Opened wallet: ".Length - 1);
@@ -176,13 +183,9 @@ namespace CryptoNoteWallet.Core
             {
                 SendError("Invalid send address.", false);
             }
-            else if (line.Contains("Error: refresh failed: daemon is busy"))
-            {
-                UpdateStatus("Retrieving blockchain");
-            }
             else if (line.Contains("Error: wallet failed to connect"))
             {
-                UpdateStatus("Can not connect to daemon");
+                UpdateStatus(WalletStatus.Error, "Can not connect to daemon");
             }
             else if (line.Contains("Error: failed to load wallet: invalid password"))
             {
@@ -194,7 +197,7 @@ namespace CryptoNoteWallet.Core
             }
             else if (line.Contains("Refresh done"))
             {
-                UpdateStatus("Ready");
+                UpdateStatus(WalletStatus.Ready, "Ready");
             }
             else if (line.Contains("Money successfully sent"))
             {
@@ -214,16 +217,30 @@ namespace CryptoNoteWallet.Core
                     BalanceUpdated.Invoke(this, new WrapperBalanceEvent(total, unlocked));
                 }
             }
+            else if (Regex.IsMatch(line, "amount[\\s]+spent"))
+            {
+                Transactions.Clear();
+                isFetchingTransactions = true;
+            }
+            else if (Regex.IsMatch(line, "([0-9]+\\.[0-9]+)[\\s]*([TF])[\\s]*[0-9]+[\\s]*<([0-9a-z]+)>"))
+            {
+                var match = Regex.Match(line, "([0-9]+\\.[0-9]+)[\\s]*([TF])[\\s]*[0-9]+[\\s]*<([0-9a-z]+)>");
+                decimal amount = decimal.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
+                bool spent = match.Groups[2].Value == "T";
+                string transactionId = match.Groups[3].Value;
+
+                var transaction = new Transaction(amount, spent, transactionId);
+                Transactions.Add(transaction);
+
+                isFetchingTransactions = true;
+            }
+
+            if (!isFetchingTransactions && TransactionsFetched != null)
+            {
+                TransactionsFetched.Invoke(this, new WrapperEvent<IList<Transaction>>(Transactions));
+            }
 
             base.HandleLine(line, isError);
-        }
-
-        private void UpdateStatus(string status)
-        {
-            if (StatusChanged != null)
-            {
-                StatusChanged.Invoke(this, new WrapperEvent<string>(status));
-            }
         }
     }
 }
