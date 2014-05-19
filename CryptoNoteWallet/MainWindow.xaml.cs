@@ -31,9 +31,12 @@ namespace CryptoNoteWallet
 
         private DaemonWrapper Daemon { get; set; }
         private WalletWrapper Wallet { get; set; }
+        private MinerWrapper MinerManager { get; set; }
 
         private List<string> DaemonLogLines { get; set; }
         private List<string> WalletLogLines { get; set; }
+
+        private bool WalletHasBeenReady { get; set; }
 
         public MainWindow(string path, bool isNew)
         {
@@ -46,29 +49,67 @@ namespace CryptoNoteWallet
                 Assembly.GetEntryAssembly().GetName().Version.Minor,
                 Assembly.GetEntryAssembly().GetName().Version.Build);
 
+            tbMinerThreads.Value = Environment.ProcessorCount;
+            FillMiningPools();
+
             int refreshInterval = int.Parse(ConfigurationManager.AppSettings["WalletRefreshInterval"]);
             int pingInterval = int.Parse(ConfigurationManager.AppSettings["DaemonPingInterval"]);
+            int connectionCountInterval = int.Parse(ConfigurationManager.AppSettings["DaemonConnectionCountInterval"]);
             
             string daemonClientExe = ConfigurationManager.AppSettings["DaemonFileName"];
             string walletClientExe = ConfigurationManager.AppSettings["WalletClientFileName"];
+            string minerExe = ConfigurationManager.AppSettings["MinerFileName"];
 
             // Initialize and start daemon.
-            Daemon = new DaemonWrapper(path, daemonClientExe, pingInterval);
+            Daemon = new DaemonWrapper(path, daemonClientExe, pingInterval, connectionCountInterval);
             DaemonLogLines = new List<string>();
-            Daemon.OutputReceived += new EventHandler<WrapperEvent<string>>((s, e) => Dispatcher.Invoke(() => AddLogText(e.Data, DaemonLogLines, tbDaemonOutput)));
+            Daemon.OutputReceived += new EventHandler<WrapperEvent<string>>((s, e) => DispatchEvent(() => AddLogText(e.Data, DaemonLogLines, tbDaemonOutput, svDaemonOutput)));
+            Daemon.StatusChanged += new EventHandler<WrapperStatusEvent>((s, e) => DispatchEvent(() => SetStatus(e.Status, e.Message)));
+            Daemon.ConnectionsCounted += new EventHandler<WrapperEvent<int>>((s, e) => DispatchEvent(() => SetConnectionCount(e.Data)));
             Daemon.Start();
 
             // Initialize and start wallet client.
             Wallet = new WalletWrapper(path, walletClientExe, isNew, refreshInterval);
             WalletLogLines = new List<string>();
-            Wallet.ReadyToLogin += new EventHandler<EventArgs>((s, e) => Dispatcher.Invoke(() => ShowLogin()));
-            Wallet.StatusChanged += new EventHandler<WrapperEvent<string>>((s, e) => Dispatcher.Invoke(() => SetStatus(e.Data)));
-            Wallet.AddressReceived += new EventHandler<WrapperEvent<string>>((s, e) => Dispatcher.Invoke(() => SetAddress(e.Data)));
-            Wallet.OutputReceived += new EventHandler<WrapperEvent<string>>((s, e) => Dispatcher.Invoke(() => AddLogText(e.Data, WalletLogLines, tbWalletClientOutput)));
-            Wallet.BalanceUpdated += new EventHandler<WrapperBalanceEvent>((s, e) => Dispatcher.Invoke(() => SetBalance(e.Total, e.Unlocked)));
-            Wallet.Error += new EventHandler<WrapperErrorEvent>((s, e) => Dispatcher.Invoke(() => ShowError(e.Message, e.ShouldExit)));
-            Wallet.Information += new EventHandler<WrapperEvent<string>>((s, e) => Dispatcher.Invoke(() => ShowInformation(e.Data)));
+            Wallet.ReadyToLogin += new EventHandler<EventArgs>((s, e) => DispatchEvent(() => ShowLogin()));
+            Wallet.StatusChanged += new EventHandler<WrapperStatusEvent>((s, e) => DispatchEvent(() => SetStatus(e.Status, e.Message)));
+            Wallet.AddressReceived += new EventHandler<WrapperEvent<string>>((s, e) => DispatchEvent(() => SetAddress(e.Data)));
+            Wallet.OutputReceived += new EventHandler<WrapperEvent<string>>((s, e) => DispatchEvent(() => AddLogText(e.Data, WalletLogLines, tbWalletClientOutput, svWalletClientOutput)));
+            Wallet.BalanceUpdated += new EventHandler<WrapperBalanceEvent>((s, e) => DispatchEvent(() => SetBalance(e.Total, e.Unlocked)));
+            Wallet.Error += new EventHandler<WrapperErrorEvent>((s, e) => DispatchEvent(() => ShowError(e.Message, e.ShouldExit)));
+            Wallet.Information += new EventHandler<WrapperEvent<string>>((s, e) => DispatchEvent(() => ShowInformation(e.Data)));
+            Wallet.TransactionsFetched += new EventHandler<WrapperEvent<IList<Transaction>>>((s, e) => DispatchEvent(() => RefreshTransactions(e.Data)));
             Wallet.Start();
+
+            MinerManager = new MinerWrapper(path, minerExe);
+        }
+
+        /// <summary>
+        /// Populate dropdown with mining pools.
+        /// </summary>
+        private void FillMiningPools()
+        {
+            var pools = ConfigurationManager.AppSettings["MiningPoolAddresses"]
+                .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+            lbMiningPools.ItemsSource = pools;
+
+            if (lbMiningPools.Items.Count > 0)
+            {
+                lbMiningPools.SelectedIndex = 0;
+            }
+        }
+
+        /// <summary>
+        /// Safely dispatch an event to an action handler.
+        /// </summary>
+        /// <param name="handler"></param>
+        private void DispatchEvent(Action handler)
+        {
+            if (!Dispatcher.HasShutdownStarted)
+            {
+                Dispatcher.Invoke(handler);
+            }
         }
 
         /// <summary>
@@ -145,14 +186,40 @@ namespace CryptoNoteWallet
         }
 
         /// <summary>
+        /// Refresh the list of transactions.
+        /// </summary>
+        /// <param name="transactions"></param>
+        private void RefreshTransactions(IList<Transaction> transactions)
+        {
+            dgTransactions.ItemsSource = transactions;
+        }
+
+        /// <summary>
         /// Set status in status bar.
         /// </summary>
         /// <param name="status"></param>
-        private void SetStatus(string status)
+        /// <param name="message"></param>
+        private void SetStatus(WalletStatus status, string message)
         {
-            tbStatus.Text = status;
+            WalletHasBeenReady = WalletHasBeenReady || status == WalletStatus.Ready;
 
-            btnSend.IsEnabled = status.Equals("Ready");
+            // Once the daemon has synced, ignore any synchronisation events.
+            if (WalletHasBeenReady && status == WalletStatus.SynchronizingBlockchain)
+            {
+                return;
+            }
+
+            tbStatus.Text = message;
+            btnSend.IsEnabled = status == WalletStatus.Ready;
+        }
+
+        /// <summary>
+        /// Set the connection count in status bar.
+        /// </summary>
+        /// <param name="connectionCount"></param>
+        private void SetConnectionCount(int connectionCount)
+        {
+            tbConnections.Text = string.Format("Connections: {0} peers", connectionCount);
         }
 
         /// <summary>
@@ -163,30 +230,35 @@ namespace CryptoNoteWallet
         {
             tbAddress.Text = address;
             btnCopyAddress.IsEnabled = true;
+            
+            tbPoolLogin.Text = address;
         }
 
         /// <summary>
         /// Update wallet log.
         /// </summary>
         /// <param name="text"></param>
-        private void AddLogText(string text, IList<string> LogLines, TextBox textBox)
+        /// <param name="logLines"></param>
+        /// <param name="textBox"></param>
+        /// <param name="scrollViewer"></param>
+        private void AddLogText(string text, IList<string> logLines, TextBox textBox, ScrollViewer scrollViewer)
         {
-            while (LogLines.Count >= 50)
+            while (logLines.Count >= 50)
             {
-                LogLines.RemoveAt(0);
+                logLines.RemoveAt(0);
             }
 
-            LogLines.Add(text);
+            logLines.Add(text);
 
-            if (LogLines.Count == 1)
+            if (logLines.Count == 1)
             {
-                textBox.Text = LogLines.First();
+                textBox.Text = logLines.First();
             }
             else
             {
-                textBox.Text = LogLines.Take(LogLines.Count - 1).Aggregate((l1, l2) => l1 + Environment.NewLine + l2);
-                textBox.AppendText(LogLines.Last());
-                textBox.ScrollToEnd();
+                textBox.Text = logLines.Aggregate((l1, l2) => l1 + Environment.NewLine + l2);
+                textBox.AppendText(Environment.NewLine); // Hack: make sure scroll to bottom works
+                scrollViewer.ScrollToBottom();
             }
         }
 
@@ -197,8 +269,9 @@ namespace CryptoNoteWallet
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             Cursor = Cursors.Wait;
-            SetStatus("Waiting for daemon to exit...");
+            SetStatus(WalletStatus.Ready, "Waiting for daemon to exit...");
 
+            MinerManager.Exit();
             Wallet.Exit();
             Daemon.Exit();
 
@@ -208,6 +281,40 @@ namespace CryptoNoteWallet
         private void btnCopyAddressClick(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(tbAddress.Text);
+        }
+
+        /// <summary>
+        /// Start miners.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnStartClick(object sender, RoutedEventArgs e)
+        {
+            if (MinerManager.IsMinig)
+            {
+                // Stop
+                MinerManager.Exit();
+
+                btnStart.Content = "Start mining";
+            }
+            else
+            {
+                // Start            
+                if (lbMiningPools.SelectedValue != null
+                    && !string.IsNullOrEmpty(tbPoolLogin.Text)
+                    && !string.IsNullOrEmpty(tbPoolPassword.Text)
+                    && tbMinerThreads.Value.HasValue)
+                {
+                    MinerManager.Start(
+                        lbMiningPools.SelectedValue.ToString(), 
+                        tbPoolLogin.Text, 
+                        tbPoolPassword.Text, 
+                        tbMinerThreads.Value.Value,
+                        chkShowWindows.IsChecked.GetValueOrDefault());
+
+                    btnStart.Content = string.Format("Stop miners ({0})", MinerManager.Processes.Count);
+                }
+            }
         }
     }
 }

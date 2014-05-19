@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        Title="CryptoNote Wallet" Height="350" Width="525" Icon="pack://application:,,,/Resources/Wallet.png">
+        Title="CryptoNote Wallet" Height="350" Width="617" Icon="pack://application:,,,/Resources/Wallet.png">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -42,22 +42,51 @@
                     <Button x:Name="btnSend" Content="Send" Grid.Column="1" HorizontalAlignment="Right" Margin="0,10,0,0" Grid.Row="4" VerticalAlignment="Top" Width="75" Click="SendClick" IsEnabled="False"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="Transactions" IsEnabled="False">
-                <Grid Margin="0">
-
+            <TabItem Header="Transactions">
+                <Grid>
+                    <ScrollViewer>
+                        <DataGrid x:Name="dgTransactions" SelectionMode="Extended" SelectionUnit="FullRow" />
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Mining">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="210"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Pool address (including portnumber):" HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Grid.Row="0" Grid.Column="0"/>
+                    <ComboBox x:Name="lbMiningPools" IsEditable="True" HorizontalAlignment="Stretch" Margin="0,4,0,0" Grid.Row="0" Grid.Column="1" />
+                    <Label Content="Pool login (your address):" HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Grid.Row="1" Grid.Column="0"/>
+                    <TextBox x:Name="tbPoolLogin" HorizontalAlignment="Stretch" Margin="0,4,0,0" TextWrapping="Wrap" Grid.Row="1" Grid.Column="1"/>
+                    <Label Content="Pool password:" HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Grid.Row="2" Grid.Column="0"/>
+                    <TextBox x:Name="tbPoolPassword" Text="x" HorizontalAlignment="Stretch" Margin="0,4,0,0" TextWrapping="Wrap" Grid.Row="2" Grid.Column="1"/>
+                    <Label Content="Number of threads:" HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Grid.Row="3" Grid.Column="0"/>
+                    <xctk:IntegerUpDown x:Name="tbMinerThreads" Value="1" Increment="1" Minimum="1" HorizontalAlignment="Stretch" Margin="0,4,0,0" Grid.Row="3" Grid.Column="1"/>
+                    <Label Content="Show miner windows:" HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Grid.Row="4" Grid.Column="0"/>
+                    <CheckBox x:Name="chkShowWindows" VerticalAlignment="Center" IsChecked="false" Margin="0,4,0,0" Grid.Row="4" Grid.Column="1"/>
+                    <Button x:Name="btnStart" Content="Start mining" Margin="0,4,0,0" Grid.ColumnSpan="2" Width="125" Grid.Row="5" Click="btnStartClick" />
                 </Grid>
             </TabItem>
             <TabItem Header="Wallet Log">
                 <Grid>
-                    <ScrollViewer>
-                        <TextBox x:Name="tbWalletClientOutput" Margin="3,0,0,0" TextWrapping="Wrap" Foreground="Black" IsReadOnly="True" IsReadOnlyCaretVisible="True" IsInactiveSelectionHighlightEnabled="True"/>
+                    <ScrollViewer x:Name="svWalletClientOutput">
+                        <TextBox x:Name="tbWalletClientOutput" Margin="0,0,0,0" Foreground="Black" IsReadOnly="True" IsInactiveSelectionHighlightEnabled="True"/>
                     </ScrollViewer>
                 </Grid>
             </TabItem>
             <TabItem Header="Daemon Log">
                 <Grid>
-                    <ScrollViewer>
-                        <TextBox x:Name="tbDaemonOutput" Margin="3,0,0,0" TextWrapping="Wrap" IsReadOnly="True" Foreground="Black"/>
+                    <ScrollViewer x:Name="svDaemonOutput">
+                        <TextBox x:Name="tbDaemonOutput" Margin="0,0,0,0" IsReadOnly="True" Foreground="Black" IsInactiveSelectionHighlightEnabled="True"/>
                     </ScrollViewer>
                 </Grid>
             </TabItem>
@@ -70,7 +99,7 @@
                 <TextBlock x:Name="tbStatus" Text="Initializing" IsEnabled="False" FontSize="10"/>
             </StatusBarItem>
             <StatusBarItem HorizontalContentAlignment="Right">
-                <TextBlock Text="Connections: 0 peers" IsEnabled="False" Visibility="Hidden" FontSize="10"/>
+                <TextBlock x:Name="tbConnections" Text="Connections: 0 peers" IsEnabled="False" FontSize="10"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>
