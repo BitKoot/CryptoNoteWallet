@@ -52,7 +52,22 @@
                     </ScrollViewer>
                 </Grid>
             </TabItem>
-            <TabItem Header="Mining">
+            <TabItem Header="Solo Mining">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="210"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Number of threads:" HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Grid.Row="0" Grid.Column="0"/>
+                    <xctk:IntegerUpDown x:Name="tbSoloMinerThreads" Value="1" Increment="1" Minimum="1" HorizontalAlignment="Stretch" Margin="0,4,0,0" Grid.Row="0" Grid.Column="1"/>
+                    <Button x:Name="btnStartSoloMining" Content="Start mining" Margin="0,4,0,0" IsEnabled="False" HorizontalAlignment="Right" Grid.ColumnSpan="2" Width="150" Grid.Row="1" Click="btnStartSoloMiningClick" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Pool Mining">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30"/>
@@ -73,10 +88,10 @@
                     <Label Content="Pool password:" HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Grid.Row="2" Grid.Column="0"/>
                     <TextBox x:Name="tbPoolPassword" Text="x" HorizontalAlignment="Stretch" Margin="0,4,0,0" TextWrapping="Wrap" Grid.Row="2" Grid.Column="1"/>
                     <Label Content="Number of threads:" HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Grid.Row="3" Grid.Column="0"/>
-                    <xctk:IntegerUpDown x:Name="tbMinerThreads" Value="1" Increment="1" Minimum="1" HorizontalAlignment="Stretch" Margin="0,4,0,0" Grid.Row="3" Grid.Column="1"/>
+                    <xctk:IntegerUpDown x:Name="tbPoolMinerThreads" Value="1" Increment="1" Minimum="1" HorizontalAlignment="Stretch" Margin="0,4,0,0" Grid.Row="3" Grid.Column="1"/>
                     <Label Content="Show miner windows:" HorizontalAlignment="Left" Margin="0,4,0,0" VerticalAlignment="Top" Grid.Row="4" Grid.Column="0"/>
-                    <CheckBox x:Name="chkShowWindows" VerticalAlignment="Center" IsChecked="false" Margin="0,4,0,0" Grid.Row="4" Grid.Column="1"/>
-                    <Button x:Name="btnStart" Content="Start mining" Margin="0,4,0,0" Grid.ColumnSpan="2" Width="125" Grid.Row="5" Click="btnStartClick" />
+                    <CheckBox x:Name="chkShowPoolMinerWindows" VerticalAlignment="Center" IsChecked="false" Margin="0,4,0,0" Grid.Row="4" Grid.Column="1"/>
+                    <Button x:Name="btnStartPoolMining" Content="Start mining" Margin="0,4,0,0" HorizontalAlignment="Right" Grid.ColumnSpan="2" Width="125" Grid.Row="5" Click="btnStartPoolMiningClick" />
                 </Grid>
             </TabItem>
             <TabItem Header="Wallet Log">

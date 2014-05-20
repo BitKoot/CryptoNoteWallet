@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -49,7 +50,8 @@ namespace CryptoNoteWallet
                 Assembly.GetEntryAssembly().GetName().Version.Minor,
                 Assembly.GetEntryAssembly().GetName().Version.Build);
 
-            tbMinerThreads.Value = Environment.ProcessorCount;
+            tbPoolMinerThreads.Value = Environment.ProcessorCount;
+            tbSoloMinerThreads.Value = Environment.ProcessorCount;
             FillMiningPools();
 
             int refreshInterval = int.Parse(ConfigurationManager.AppSettings["WalletRefreshInterval"]);
@@ -66,6 +68,7 @@ namespace CryptoNoteWallet
             Daemon.OutputReceived += new EventHandler<WrapperEvent<string>>((s, e) => DispatchEvent(() => AddLogText(e.Data, DaemonLogLines, tbDaemonOutput, svDaemonOutput)));
             Daemon.StatusChanged += new EventHandler<WrapperStatusEvent>((s, e) => DispatchEvent(() => SetStatus(e.Status, e.Message)));
             Daemon.ConnectionsCounted += new EventHandler<WrapperEvent<int>>((s, e) => DispatchEvent(() => SetConnectionCount(e.Data)));
+            Daemon.UpdateSoloMiningHashRate += new EventHandler<WrapperEvent<decimal>>((s, e) => DispatchEvent(() => UpdateSoloMiningHashRate(e.Data)));
             Daemon.Start();
 
             // Initialize and start wallet client.
@@ -224,6 +227,7 @@ namespace CryptoNoteWallet
 
             tbStatus.Text = message;
             btnSend.IsEnabled = status == WalletStatus.Ready;
+            btnStartSoloMining.IsEnabled = status == WalletStatus.Ready;
         }
 
         /// <summary>
@@ -297,24 +301,57 @@ namespace CryptoNoteWallet
         }
 
         /// <summary>
-        /// Start miners.
+        /// Start solo mining.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnStartClick(object sender, RoutedEventArgs e)
+        private void btnStartSoloMiningClick(object sender, RoutedEventArgs e)
+        {
+            if (Daemon.IsMining)
+            {
+                Daemon.StopMining();
+
+                btnStartSoloMining.Content = "Start mining";
+            }
+            else
+            {
+                if (tbAddress.Text != "Initializing" && tbSoloMinerThreads.Value.HasValue)
+                {
+                    Daemon.StartMining(tbAddress.Text, tbSoloMinerThreads.Value.Value);
+                }
+
+                UpdateSoloMiningHashRate(0);
+            }
+        }
+
+        /// <summary>
+        /// Update solo mining hash rate display on solo mining button.
+        /// </summary>
+        /// <param name="hr"></param>
+        private void UpdateSoloMiningHashRate(decimal hr)
+        {
+            btnStartSoloMining.Content = string.Format(CultureInfo.CurrentUICulture, "Stop mining ({0:0.00} H/s)", hr);
+        }
+
+        /// <summary>
+        /// Start pool miners.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnStartPoolMiningClick(object sender, RoutedEventArgs e)
         {
             lbMiningPools.IsEnabled = MinerManager.IsMinig;
             tbPoolLogin.IsEnabled = MinerManager.IsMinig;
             tbPoolPassword.IsEnabled = MinerManager.IsMinig;
-            tbMinerThreads.IsEnabled = MinerManager.IsMinig;
-            chkShowWindows.IsEnabled = MinerManager.IsMinig;
+            tbPoolMinerThreads.IsEnabled = MinerManager.IsMinig;
+            chkShowPoolMinerWindows.IsEnabled = MinerManager.IsMinig;
 
             if (MinerManager.IsMinig)
             {
                 // Stop
                 MinerManager.Exit();
 
-                btnStart.Content = "Start mining";
+                btnStartPoolMining.Content = "Start mining";
             }
             else
             {
@@ -322,16 +359,16 @@ namespace CryptoNoteWallet
                 if (lbMiningPools.SelectedValue != null
                     && !string.IsNullOrEmpty(tbPoolLogin.Text)
                     && !string.IsNullOrEmpty(tbPoolPassword.Text)
-                    && tbMinerThreads.Value.HasValue)
+                    && tbPoolMinerThreads.Value.HasValue)
                 {
                     MinerManager.Start(
                         lbMiningPools.SelectedValue.ToString(), 
                         tbPoolLogin.Text, 
-                        tbPoolPassword.Text, 
-                        tbMinerThreads.Value.Value,
-                        chkShowWindows.IsChecked.GetValueOrDefault());
+                        tbPoolPassword.Text,
+                        tbPoolMinerThreads.Value.Value,
+                        chkShowPoolMinerWindows.IsChecked.GetValueOrDefault());
 
-                    btnStart.Content = string.Format("Stop miners ({0})", MinerManager.Processes.Count);
+                    btnStartPoolMining.Content = string.Format("Stop miners ({0})", MinerManager.Processes.Count);
                 }
             }
         }

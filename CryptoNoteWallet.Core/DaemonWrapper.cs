@@ -21,6 +21,9 @@ namespace CryptoNoteWallet.Core
         private int ConnectionCount { get; set; }
 
         public EventHandler<WrapperEvent<int>> ConnectionsCounted;
+        public EventHandler<WrapperEvent<decimal>> UpdateSoloMiningHashRate; 
+
+        public bool IsMining { get; set; }
 
         public DaemonWrapper(string walletPath, string exeFileName, int pingInterval, int connectionCountInterval)
             : base(walletPath, exeFileName)
@@ -73,6 +76,27 @@ namespace CryptoNoteWallet.Core
             WriteLine("print_cn");
         }
 
+        /// <summary>
+        /// Start mining.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="threads"></param>
+        public void StartMining(string address, int threads)
+        {
+            IsMining = true;
+
+            WriteLine(string.Format("start_mining {0} {1}", address, threads));
+            WriteLine("show_hr");
+        }
+
+        public void StopMining()
+        {
+            IsMining = false;
+
+            WriteLine("hide_hr");
+            WriteLine("stop_mining");
+        }
+
         public override void Exit()
         {
             HandleLines = false;
@@ -111,6 +135,17 @@ namespace CryptoNoteWallet.Core
             {
                 ConnectionCount++;
                 isCountingConnections = true;
+            }
+            else if (line.Contains("hashrate:"))
+            {
+                Match match = Regex.Match(line, "hashrate: ([0-9]+\\.?[0-9]*)");
+                decimal hr = 0;
+                if (match.Success 
+                    && UpdateSoloMiningHashRate != null 
+                    && decimal.TryParse(match.Groups[1].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out hr))
+                {
+                    UpdateSoloMiningHashRate.Invoke(this, new WrapperEvent<decimal>(hr));
+                }
             }
 
             if (!isCountingConnections && ConnectionsCounted != null)
