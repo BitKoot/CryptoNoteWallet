@@ -79,6 +79,7 @@ namespace CryptoNoteWallet
             Wallet.Error += new EventHandler<WrapperErrorEvent>((s, e) => DispatchEvent(() => ShowError(e.Message, e.ShouldExit)));
             Wallet.Information += new EventHandler<WrapperEvent<string>>((s, e) => DispatchEvent(() => ShowInformation(e.Data)));
             Wallet.TransactionsFetched += new EventHandler<WrapperEvent<IList<Transaction>>>((s, e) => DispatchEvent(() => RefreshTransactions(e.Data)));
+            Wallet.WalletReadyToSpent += new EventHandler<WrapperEvent<bool>>((s, e) => DispatchEvent(() => WalletReadyToSpent(e.Data)));
             Wallet.Start();
 
             MinerManager = new MinerWrapper(path, minerExe);
@@ -150,11 +151,14 @@ namespace CryptoNoteWallet
             }
             else
             {
+                btnSend.IsEnabled = false;
+
                 string address = tbSendAddress.Text;
                 decimal amount = tbSendAmount.Value.Value;
                 int mixin = tbSendMixin.Value.Value;
+                string paymentId = tbPaymentId.Text;
 
-                Wallet.Transfer(address, amount, mixin);
+                Wallet.Transfer(address, amount, mixin, paymentId);
             }
         }
 
@@ -192,6 +196,15 @@ namespace CryptoNoteWallet
         private void RefreshTransactions(IList<Transaction> transactions)
         {
             dgTransactions.ItemsSource = transactions;
+        }
+
+        /// <summary>
+        /// Enables or disables the sent button.
+        /// </summary>
+        /// <param name="readyToSpent"></param>
+        private void WalletReadyToSpent(bool readyToSpent)
+        {
+            btnSend.IsEnabled = readyToSpent;
         }
 
         /// <summary>
@@ -290,6 +303,12 @@ namespace CryptoNoteWallet
         /// <param name="e"></param>
         private void btnStartClick(object sender, RoutedEventArgs e)
         {
+            lbMiningPools.IsEnabled = MinerManager.IsMinig;
+            tbPoolLogin.IsEnabled = MinerManager.IsMinig;
+            tbPoolPassword.IsEnabled = MinerManager.IsMinig;
+            tbMinerThreads.IsEnabled = MinerManager.IsMinig;
+            chkShowWindows.IsEnabled = MinerManager.IsMinig;
+
             if (MinerManager.IsMinig)
             {
                 // Stop

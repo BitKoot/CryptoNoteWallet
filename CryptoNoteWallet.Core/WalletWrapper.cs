@@ -24,6 +24,7 @@ namespace CryptoNoteWallet.Core
         public EventHandler<WrapperEvent<string>> AddressReceived;
         public EventHandler<WrapperBalanceEvent> BalanceUpdated;
         public EventHandler<WrapperEvent<IList<Transaction>>> TransactionsFetched;
+        public EventHandler<WrapperEvent<bool>> WalletReadyToSpent;
 
         public WalletWrapper(string walletPath, string exeFileName, bool isNew, int refreshInterval)
             : base(walletPath, exeFileName)
@@ -121,9 +122,17 @@ namespace CryptoNoteWallet.Core
         /// <param name="address"></param>
         /// <param name="amount"></param>
         /// <param name="mixin"></param>
-        public void Transfer(string address, decimal amount, int mixin)
+        /// <param name="paymentId"></param>
+        public void Transfer(string address, decimal amount, int mixin, string paymentId)
         {
-            WriteLine(string.Format(CultureInfo.InvariantCulture, "transfer {0} {1} {2}", mixin, address.Trim(), amount));
+            if (string.IsNullOrWhiteSpace(paymentId))
+            {
+                WriteLine(string.Format(CultureInfo.InvariantCulture, "transfer {0} {1} {2}", mixin, address.Trim(), amount));
+            }
+            else
+            {
+                WriteLine(string.Format(CultureInfo.InvariantCulture, "transfer {0} {1} {2} {3}", mixin, address.Trim(), amount, paymentId));
+            }            
         }
 
         /// <summary>
@@ -182,6 +191,8 @@ namespace CryptoNoteWallet.Core
             else if (line.Contains("Error: wrong address"))
             {
                 SendError("Invalid send address.", false);
+
+                SetWalletReadyToSpent(true);
             }
             else if (line.Contains("Error: wallet failed to connect"))
             {
@@ -191,9 +202,17 @@ namespace CryptoNoteWallet.Core
             {
                 SendError("Invalid password", true);
             }
+            else if (line.Contains("Error: payment id has invalid format"))
+            {
+                SendError("The payment id has an incorrect format. It needs to be a 64 character string.", false);
+
+                SetWalletReadyToSpent(true);
+            }
             else if (line.Contains("Error: not enough money"))
             {
                 SendError(line, false);
+
+                SetWalletReadyToSpent(true);
             }
             else if (line.Contains("Refresh done"))
             {
@@ -206,6 +225,8 @@ namespace CryptoNoteWallet.Core
                 {
                     SendInformation("Money successfully sent, transaction: " + match.Groups[1].Value);
                 }
+
+                SetWalletReadyToSpent(true);
             }
             else if (line.Contains("balance"))
             {
@@ -241,6 +262,14 @@ namespace CryptoNoteWallet.Core
             }
 
             base.HandleLine(line, isError);
+        }
+
+        private void SetWalletReadyToSpent(bool readyToSpent)
+        {
+            if (WalletReadyToSpent != null)
+            {
+                WalletReadyToSpent.Invoke(this, new WrapperEvent<bool>(readyToSpent));
+            }
         }
     }
 }

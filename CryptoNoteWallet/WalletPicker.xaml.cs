@@ -29,7 +29,7 @@ namespace CryptoNoteWallet
             InitializeComponent();
 
             walletPath = ConfigurationManager.AppSettings.Get("WalletPath");
-            if (string.IsNullOrWhiteSpace(walletPath))
+            if (string.IsNullOrWhiteSpace(walletPath) || !Directory.Exists(walletPath))
             {
                 walletPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             }
