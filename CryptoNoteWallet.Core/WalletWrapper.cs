@@ -16,9 +16,10 @@ namespace CryptoNoteWallet.Core
     /// </summary>
     public class WalletWrapper : BaseWrapper
     {
-        private Timer RefreshTimer { get; set; }
         private List<Transaction> Transactions { get; set; }
         private bool IsNew { get; set; }
+
+        public Timer RefreshTimer { get; set; }
 
         public EventHandler<EventArgs> ReadyToLogin;
         public EventHandler<WrapperEvent<string>> AddressReceived;
@@ -74,8 +75,6 @@ namespace CryptoNoteWallet.Core
             TaskFactory factory = new TaskFactory();
             await factory.StartNew(() => ReadNextLine(false));
             await factory.StartNew(() => ReadNextLine(true));
-
-            RefreshTimer.Start();
         }
 
         public override void Exit()
@@ -213,10 +212,6 @@ namespace CryptoNoteWallet.Core
                 SendError(line, false);
 
                 SetWalletReadyToSpent(true);
-            }
-            else if (line.Contains("Refresh done"))
-            {
-                UpdateStatus(WalletStatus.Ready, "Ready");
             }
             else if (line.Contains("Money successfully sent"))
             {

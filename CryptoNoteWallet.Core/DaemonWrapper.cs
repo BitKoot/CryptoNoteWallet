@@ -126,6 +126,10 @@ namespace CryptoNoteWallet.Core
                         string.Format("Retrieving blockchain ({0} blocks / {1} days behind)", match.Groups[1].Value, match.Groups[2].Value));
                 }
             }
+            else if (line.Contains("You are now synchronized with the network."))
+            {
+                UpdateStatus(WalletStatus.Ready, "Ready");
+            }
             else if (Regex.IsMatch(line, "Remote Host[\\s]+Peer id"))
             {
                 ConnectionCount = 0;

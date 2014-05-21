@@ -228,6 +228,11 @@ namespace CryptoNoteWallet
             tbStatus.Text = message;
             btnSend.IsEnabled = status == WalletStatus.Ready;
             btnStartSoloMining.IsEnabled = status == WalletStatus.Ready;
+
+            if (status == WalletStatus.Ready && !Wallet.RefreshTimer.Enabled)
+            {
+                Wallet.RefreshTimer.Start();
+            }
         }
 
         /// <summary>
