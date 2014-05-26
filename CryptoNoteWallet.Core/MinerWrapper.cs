@@ -53,7 +53,7 @@ namespace CryptoNoteWallet.Core
                 }
 
                 processStartInfo.CreateNoWindow = !showWindows;
-                processStartInfo.Arguments = string.Format("--pool-addr {0} --login {1} --pass {2}", PoolAddress, PoolLogin, PoolPassword);
+                processStartInfo.Arguments = string.Format("--pool-addr \"{0}\" --login \"{1}\" --pass \"{2}\"", PoolAddress, PoolLogin, PoolPassword);
                 process.StartInfo = processStartInfo;
 
                 Processes.Add(process);

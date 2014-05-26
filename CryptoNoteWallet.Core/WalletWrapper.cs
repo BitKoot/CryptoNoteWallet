@@ -62,11 +62,11 @@ namespace CryptoNoteWallet.Core
 
             if (IsNew)
             {
-                processStartInfo.Arguments = "--generate-new-wallet=" + WalletPath;
+                processStartInfo.Arguments = string.Format("--generate-new-wallet=\"{0}\"", WalletPath);
             }
             else
             {
-                processStartInfo.Arguments = "--wallet-file=" + WalletPath;
+                processStartInfo.Arguments = string.Format("--wallet-file=\"{0}\"", WalletPath);
             }
 
             WrapperProcess.StartInfo = processStartInfo;
