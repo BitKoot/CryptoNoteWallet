@@ -1,4 +1,4 @@
-﻿namespace CryptoNoteWallet.Gui
+﻿namespace CryptoNoteWallet
 {
     partial class MainWindow
     {
@@ -336,9 +336,9 @@
             // 
             // btnStartSoloMining
             // 
-            this.btnStartSoloMining.Location = new System.Drawing.Point(470, 53);
+            this.btnStartSoloMining.Location = new System.Drawing.Point(430, 53);
             this.btnStartSoloMining.Name = "btnStartSoloMining";
-            this.btnStartSoloMining.Size = new System.Drawing.Size(122, 28);
+            this.btnStartSoloMining.Size = new System.Drawing.Size(162, 28);
             this.btnStartSoloMining.TabIndex = 6;
             this.btnStartSoloMining.Text = "Start mining";
             this.btnStartSoloMining.UseVisualStyleBackColor = true;
@@ -393,9 +393,9 @@
             // 
             // btnStartPoolMining
             // 
-            this.btnStartPoolMining.Location = new System.Drawing.Point(472, 168);
+            this.btnStartPoolMining.Location = new System.Drawing.Point(439, 168);
             this.btnStartPoolMining.Name = "btnStartPoolMining";
-            this.btnStartPoolMining.Size = new System.Drawing.Size(120, 27);
+            this.btnStartPoolMining.Size = new System.Drawing.Size(153, 27);
             this.btnStartPoolMining.TabIndex = 5;
             this.btnStartPoolMining.Text = "Start mining";
             this.btnStartPoolMining.UseVisualStyleBackColor = true;
@@ -500,7 +500,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 25);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(600, 337);
+            this.tabPage6.Size = new System.Drawing.Size(600, 315);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Wallet Log";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -513,7 +513,7 @@
             this.tbWalletLog.Name = "tbWalletLog";
             this.tbWalletLog.ReadOnly = true;
             this.tbWalletLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbWalletLog.Size = new System.Drawing.Size(594, 331);
+            this.tbWalletLog.Size = new System.Drawing.Size(594, 309);
             this.tbWalletLog.TabIndex = 0;
             this.tbWalletLog.WordWrap = false;
             // 
@@ -523,7 +523,7 @@
             this.tabPage7.Location = new System.Drawing.Point(4, 25);
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage7.Size = new System.Drawing.Size(600, 337);
+            this.tabPage7.Size = new System.Drawing.Size(600, 315);
             this.tabPage7.TabIndex = 6;
             this.tabPage7.Text = "Daemon Log";
             this.tabPage7.UseVisualStyleBackColor = true;
@@ -536,7 +536,7 @@
             this.tbDaemonLog.Name = "tbDaemonLog";
             this.tbDaemonLog.ReadOnly = true;
             this.tbDaemonLog.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbDaemonLog.Size = new System.Drawing.Size(594, 331);
+            this.tbDaemonLog.Size = new System.Drawing.Size(594, 309);
             this.tbDaemonLog.TabIndex = 1;
             this.tbDaemonLog.WordWrap = false;
             // 

@@ -8,25 +8,32 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CryptoNoteWallet.Gui
+namespace CryptoNoteWallet
 {
     public partial class LoginPrompt : Form
     {
         public bool ShouldLogin { get; set; }
         public string Password { get; set; }
 
-        public LoginPrompt(Form parent)
+        public LoginPrompt()
         {
-            Owner = parent;
-
             InitializeComponent();
 
             tbPassword.Focus();
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            
+            CenterToParent();
+        }
+
         private void btnCancel_Click(object sender, EventArgs e)
         {
             DialogResult = DialogResult.Cancel;
+
+            Close();
         }
 
         private void btnOpen_Click(object sender, EventArgs e)

@@ -25,11 +25,23 @@ namespace CryptoNoteWallet.Core
         public EventHandler<WrapperEvent<string>> Information;
         public EventHandler<WrapperStatusEvent> StatusChanged;
 
+        /// <summary>
+        /// Gets the executable path. Returns the path if the file exists, 
+        /// will return the path without extension otherwhise (used for linux).
+        /// </summary>
         protected string ExecutablePath
         {
             get
             {
-                return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(WalletPath), ExeFileName);
+                string path = System.IO.Path.Combine(Path.GetDirectoryName(WalletPath), ExeFileName);
+                if (File.Exists(path) || !Path.HasExtension(path))
+                {
+                    return path;
+                }
+                else 
+                {
+                    return Path.ChangeExtension(path, null);
+                }
             }
         }
 
@@ -126,9 +138,10 @@ namespace CryptoNoteWallet.Core
         /// </summary>
         /// <param name="line">Current line.</param>
         /// <param name="isError">Is the line read from StandardError?</param>
-        protected virtual void HandleLine(string line, bool isError)
+        /// <param name="lineIsHandled">Has the line been handled?</param>
+        protected virtual void HandleLine(string line, bool isError, bool lineIsHandled = true)
         {
-            if (OutputReceived != null)
+            if (!lineIsHandled && OutputReceived != null)
             {
                 OutputReceived.Invoke(this, new WrapperEvent<string>(line));
             }

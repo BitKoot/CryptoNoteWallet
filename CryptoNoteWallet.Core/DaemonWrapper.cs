@@ -112,7 +112,8 @@ namespace CryptoNoteWallet.Core
         /// </summary>
         /// <param name="line">Current line.</param>
         /// <param name="isError">Is the line read from StandardError?</param>
-        protected override void HandleLine(string line, bool isError)
+        /// <param name="lineIsHandled">Has the line been handled?</param>
+        protected override void HandleLine(string line, bool isError, bool lineIsHandled = true)
         {
             bool isCountingConnections = false;
 
@@ -135,7 +136,7 @@ namespace CryptoNoteWallet.Core
                 ConnectionCount = 0;
                 isCountingConnections = true;
             }
-            else if (Regex.IsMatch(line, "\\[OUT\\][0-9\\.:]+[\\s]+[0-9a-z]+"))
+            else if (Regex.IsMatch(line, "\\[OUT\\][0-9a-z\\.:]+[\\s]+[0-9a-z]+"))
             {
                 ConnectionCount++;
                 isCountingConnections = true;
@@ -151,13 +152,23 @@ namespace CryptoNoteWallet.Core
                     UpdateSoloMiningHashRate.Invoke(this, new WrapperEvent<decimal>(hr));
                 }
             }
+            else if (Regex.IsMatch(line, "\\[INC\\][0-9a-z\\.:]+[\\s]+[0-9a-z]+")
+                || line.Contains("Connections:")
+                || string.IsNullOrWhiteSpace(line))
+            {
+                // Ignore these lines
+            }
+            else
+            {
+                lineIsHandled = false;
+            }
 
             if (!isCountingConnections && ConnectionsCounted != null)
             {
                 ConnectionsCounted.Invoke(this, new WrapperEvent<int>(ConnectionCount));
             }
 
-            base.HandleLine(line, isError);
+            base.HandleLine(line, isError, lineIsHandled);
         }
     }
 }

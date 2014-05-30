@@ -1,4 +1,4 @@
-﻿namespace CryptoNoteWallet.Gui
+﻿namespace CryptoNoteWallet
 {
     partial class CreateWallet
     {

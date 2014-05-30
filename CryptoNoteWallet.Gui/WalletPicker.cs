@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CryptoNoteWallet.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
@@ -10,26 +11,51 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CryptoNoteWallet.Gui
+namespace CryptoNoteWallet
 {
     public partial class WalletPicker : Form
     {
-        private string walletPath;
         private List<FileInfo> existingWallets;
+
+        private string WalletPath
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Settings.Default.WalletPath))
+                {
+                    if (string.IsNullOrWhiteSpace(Settings.Default.WalletPath) 
+                        || !Directory.Exists(Settings.Default.WalletPath))
+                    {
+                        WalletPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+                    }
+                }
+
+                return Settings.Default.WalletPath;
+            }
+            set
+            {
+                Settings.Default.WalletPath = value;
+                Settings.Default.Save();
+            }
+        }
 
         public WalletPicker()
         {
             InitializeComponent();
 
-            walletPath = ConfigurationManager.AppSettings.Get("WalletPath");
-            if (string.IsNullOrWhiteSpace(walletPath) || !Directory.Exists(walletPath))
-            {
-                walletPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
-            }
+            UpdateWallets();
+        }
+
+        /// <summary>
+        /// Get list of available wallet files.
+        /// </summary>
+        private void UpdateWallets()
+        {
+            lblWalletPath.Text = WalletPath;
 
             string extensions = ConfigurationManager.AppSettings.Get("WalletExtensions") ?? "wallet";
 
-            var dir = new DirectoryInfo(walletPath);
+            var dir = new DirectoryInfo(WalletPath);
             existingWallets = new List<FileInfo>();
 
             foreach (var extension in extensions.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries))
@@ -79,7 +105,7 @@ namespace CryptoNoteWallet.Gui
 
             if (createForm.ShowDialog() == DialogResult.OK)
             {
-                string fullWalletPath = System.IO.Path.Combine(walletPath, createForm.WalletName + ".bin");
+                string fullWalletPath = System.IO.Path.Combine(WalletPath, createForm.WalletName + ".bin");
                 OpenMain(fullWalletPath, true);
             }
         }
@@ -110,7 +136,7 @@ namespace CryptoNoteWallet.Gui
 
             try
             {
-                mw.ShowDialog();
+                mw.ShowDialog(this);
             }
             catch (InvalidOperationException)
             {
@@ -118,6 +144,20 @@ namespace CryptoNoteWallet.Gui
             }
 
             Close();
+        }
+
+        /// <summary>
+        /// Select wallet path.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnSelectWalletPath_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+            {
+                WalletPath = folderBrowserDialog.SelectedPath;
+                UpdateWallets();
+            }
         }
     }
 }

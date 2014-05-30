@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CryptoNoteWallet.Gui
+namespace CryptoNoteWallet
 {
     public partial class MainWindow : Form
     {
@@ -98,7 +98,7 @@ namespace CryptoNoteWallet.Gui
         /// <param name="handler"></param>
         private void DispatchEvent(Action handler)
         {
-            if (!IsDisposed && InvokeRequired)
+            if (!Disposing && !IsDisposed && InvokeRequired)
             {
                 Invoke(handler);
             }
@@ -161,8 +161,8 @@ namespace CryptoNoteWallet.Gui
         /// </summary>
         private void ShowLogin()
         {
-            var loginPrompt = new LoginPrompt(this);
-            if (loginPrompt.ShowDialog() == DialogResult.OK)
+            var loginPrompt = new LoginPrompt();
+            if (loginPrompt.ShowDialog(this) == DialogResult.OK)
             {
                 Wallet.Login(loginPrompt.Password);
             }
@@ -279,16 +279,30 @@ namespace CryptoNoteWallet.Gui
         /// When the form closes, make sure the wallet stops refreshing and all work is saved.
         /// </summary>
         /// <param name="e"></param>
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        protected async override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             Cursor = Cursors.WaitCursor;
             SetStatus(WalletStatus.Ready, "Waiting for daemon to exit...");
 
-            MinerManager.Exit();
-            Wallet.Exit();
-            Daemon.Exit();
+            e.Cancel = true;
 
-            base.OnClosing(e);
+            Progress progess = new Progress();
+            progess.Show(this);
+
+            var tf = new TaskFactory();
+
+            progess.SetProgress("Stopping miners", 0);
+            await tf.StartNew(() => MinerManager.Exit());
+
+
+            progess.SetProgress("Stopping wallet", 33);
+            await tf.StartNew(() => Wallet.Exit());
+
+
+            progess.SetProgress("Stopping daemon", 66);
+            await tf.StartNew(() => Daemon.Exit());
+
+            Application.Exit();
         }
 
         private void btnCopyAddressClick(object sender, EventArgs e)
@@ -352,13 +366,13 @@ namespace CryptoNoteWallet.Gui
             else
             {
                 // Start            
-                if (lbMiningPools.SelectedValue != null
+                if (!string.IsNullOrEmpty(lbMiningPools.Text)
                     && !string.IsNullOrEmpty(tbPoolLogin.Text)
                     && !string.IsNullOrEmpty(tbPoolPassword.Text)
                     && tbPoolMinerThreads.Value != 0M)
                 {
                     MinerManager.Start(
-                        lbMiningPools.SelectedValue.ToString(),
+                        lbMiningPools.Text,
                         tbPoolLogin.Text,
                         tbPoolPassword.Text,
                         (int)tbPoolMinerThreads.Value,

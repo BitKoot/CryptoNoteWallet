@@ -156,7 +156,8 @@ namespace CryptoNoteWallet.Core
         /// </summary>
         /// <param name="line">Current line.</param>
         /// <param name="isError">Is the line read from StandardError?</param>
-        protected override void HandleLine(string line, bool isError)
+        /// <param name="lineIsHandled">Has the line been handled?</param>
+        protected override void HandleLine(string line, bool isError, bool lineIsHandled = true)
         {
             bool isFetchingTransactions = false;
 
@@ -250,13 +251,25 @@ namespace CryptoNoteWallet.Core
 
                 isFetchingTransactions = true;
             }
+            else if (Regex.IsMatch(line, "Height [0-9]+ of [0-9]+")
+                || line.Contains("No incoming transfers")
+                || line.Contains("Starting refresh...")
+                || line.Contains("Refresh done")
+                || string.IsNullOrWhiteSpace(line))
+            {
+                // Ignore these lines
+            }
+            else
+            {
+                lineIsHandled = false; 
+            }
 
             if (!isFetchingTransactions && TransactionsFetched != null)
             {
                 TransactionsFetched.Invoke(this, new WrapperEvent<IList<Transaction>>(Transactions));
             }
 
-            base.HandleLine(line, isError);
+            base.HandleLine(line, isError, lineIsHandled);
         }
 
         private void SetWalletReadyToSpent(bool readyToSpent)
