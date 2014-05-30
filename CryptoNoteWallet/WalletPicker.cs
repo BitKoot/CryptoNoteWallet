@@ -47,7 +47,7 @@ namespace CryptoNoteWallet
         }
 
         /// <summary>
-        /// Get list of available wallet files.
+        /// Get datasource of available wallet files.
         /// </summary>
         private void UpdateWallets()
         {

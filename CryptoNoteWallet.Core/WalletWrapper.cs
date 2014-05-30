@@ -246,8 +246,33 @@ namespace CryptoNoteWallet.Core
                 bool spent = match.Groups[2].Value == "T";
                 string transactionId = match.Groups[3].Value;
 
-                var transaction = new Transaction(amount, spent, transactionId);
-                Transactions.Add(transaction);
+                var existingTransaction = Transactions.FirstOrDefault(t => t.TransactionId == transactionId);
+
+                if (existingTransaction == null)
+                {
+                    var transaction = new Transaction(amount, spent, transactionId);
+                    Transactions.Add(transaction);
+                }
+                else
+                {
+                    if (spent)
+                    {
+                        existingTransaction.Amount -= amount;
+                    }
+                    else
+                    {
+                        existingTransaction.Amount += amount;
+                    }
+
+                    if (existingTransaction.Amount < 0)
+                    {
+                        existingTransaction.Type = "Send";
+                    }
+                    else
+                    {
+                        existingTransaction.Type = "Received";
+                    }
+                }
 
                 isFetchingTransactions = true;
             }
@@ -266,6 +291,11 @@ namespace CryptoNoteWallet.Core
 
             if (!isFetchingTransactions && TransactionsFetched != null)
             {
+                foreach (var transaction in Transactions)
+                {
+                    transaction.Amount = Math.Abs(transaction.Amount);
+                }
+
                 TransactionsFetched.Invoke(this, new WrapperEvent<IList<Transaction>>(Transactions));
             }
 

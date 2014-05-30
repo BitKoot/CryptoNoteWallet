@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoNoteWallet.Core", "CryptoNoteWallet.Core\CryptoNoteWallet.Core.csproj", "{3C2385D2-15AB-4974-811D-14481F683501}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoNoteWallet", "CryptoNoteWallet.Gui\CryptoNoteWallet.csproj", "{FC43063F-B114-4A69-B6F1-0F122F7EE2C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoNoteWallet", "CryptoNoteWallet\CryptoNoteWallet.csproj", "{FC43063F-B114-4A69-B6F1-0F122F7EE2C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

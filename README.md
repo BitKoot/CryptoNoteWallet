@@ -15,12 +15,11 @@ Features:
 - Show wallet address 
 - Copy wallet address to clipboard
 - Transfer coins
+- Solo and pool mining
 - Show logging from wallet and daemon
-- Saved wallet and daemon on exit.
+- Save wallet and daemon on exit.
 
 Depends on:
-- Json.NET - http://james.newtonking.com/json
-- Extended WPF toolkit - https://wpftoolkit.codeplex.com/
-- .NET 4.5
-- VS2012 or higher
+- .NET 4.5 / Mono 3.2
+- VS2012 or higher / MonoDevelop 4
 

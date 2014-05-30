@@ -313,11 +313,16 @@
             // 
             this.dgTransactions.AllowUserToAddRows = false;
             this.dgTransactions.AllowUserToDeleteRows = false;
+            this.dgTransactions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.dgTransactions.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.dgTransactions.CausesValidation = false;
             this.dgTransactions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgTransactions.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgTransactions.Location = new System.Drawing.Point(3, 3);
             this.dgTransactions.Name = "dgTransactions";
             this.dgTransactions.ReadOnly = true;
+            this.dgTransactions.ShowCellErrors = false;
+            this.dgTransactions.ShowRowErrors = false;
             this.dgTransactions.Size = new System.Drawing.Size(594, 309);
             this.dgTransactions.TabIndex = 0;
             // 

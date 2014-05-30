@@ -25,6 +25,7 @@ namespace CryptoNoteWallet
         private List<string> DaemonLogLines { get; set; }
         private List<string> WalletLogLines { get; set; }
 
+        private bool skipExitWrappers;
         private bool WalletHasBeenReady { get; set; }
 
         public MainWindow(string path, bool isNew)
@@ -184,12 +185,13 @@ namespace CryptoNoteWallet
         }
 
         /// <summary>
-        /// Refresh the list of transactions.
+        /// Refresh the datasource of transactions.
         /// </summary>
         /// <param name="transactions"></param>
         private void RefreshTransactions(IList<Transaction> transactions)
         {
-            dgTransactions.DataSource = transactions;
+            BindingList<Transaction> datasource = new BindingList<Transaction>(transactions);
+            dgTransactions.DataSource = datasource;
         }
 
         /// <summary>
@@ -281,28 +283,32 @@ namespace CryptoNoteWallet
         /// <param name="e"></param>
         protected async override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
-            Cursor = Cursors.WaitCursor;
-            SetStatus(WalletStatus.Ready, "Waiting for daemon to exit...");
+            if (!skipExitWrappers)
+            {
+                Cursor = Cursors.WaitCursor;
+                SetStatus(WalletStatus.Ready, "Exiting...");
 
-            e.Cancel = true;
+                skipExitWrappers = true;
+                e.Cancel = true;
 
-            Progress progess = new Progress();
-            progess.Show(this);
+                Progress progess = new Progress();
+                progess.Show(this);
 
-            var tf = new TaskFactory();
+                var tf = new TaskFactory();
 
-            progess.SetProgress("Stopping miners", 0);
-            await tf.StartNew(() => MinerManager.Exit());
-
-
-            progess.SetProgress("Stopping wallet", 33);
-            await tf.StartNew(() => Wallet.Exit());
+                progess.SetProgress("Stopping miners", 0);
+                await tf.StartNew(() => MinerManager.Exit());
 
 
-            progess.SetProgress("Stopping daemon", 66);
-            await tf.StartNew(() => Daemon.Exit());
+                progess.SetProgress("Stopping wallet", 33);
+                await tf.StartNew(() => Wallet.Exit());
 
-            Application.Exit();
+
+                progess.SetProgress("Stopping daemon", 66);
+                await tf.StartNew(() => Daemon.Exit());
+
+                Close();
+            }
         }
 
         private void btnCopyAddressClick(object sender, EventArgs e)
