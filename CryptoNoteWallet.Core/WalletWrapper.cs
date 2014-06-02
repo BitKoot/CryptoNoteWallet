@@ -280,11 +280,11 @@ namespace CryptoNoteWallet.Core
 
                     if (existingTransaction.Amount < 0)
                     {
-                        existingTransaction.Type = "Send";
+                        existingTransaction.Availablity = "Unavailable";
                     }
                     else
                     {
-                        existingTransaction.Type = "Received";
+                        existingTransaction.Availablity = "Available";
                     }
                 }
 

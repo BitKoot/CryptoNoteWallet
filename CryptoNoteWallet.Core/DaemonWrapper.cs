@@ -129,7 +129,7 @@ namespace CryptoNoteWallet.Core
             }
             else if (line.Contains("You are now synchronized with the network."))
             {
-                UpdateStatus(WalletStatus.Ready, "Ready");
+                UpdateStatus(WalletStatus.Ready, "Daemon ready, updating wallet...");
             }
             else if (Regex.IsMatch(line, "Remote Host[\\s]+Peer id"))
             {
