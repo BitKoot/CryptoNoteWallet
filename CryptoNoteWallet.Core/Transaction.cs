@@ -15,7 +15,7 @@ namespace CryptoNoteWallet.Core
         public Transaction(decimal amount, bool spent, string transactionId)
         {
             Amount = amount;
-            this.Type = spent ? "Send" : "Receive";
+            this.Type = spent ? "Send" : "Received";
             TransactionId = transactionId;
         }
     }

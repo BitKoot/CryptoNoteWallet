@@ -10,6 +10,7 @@ namespace CryptoNoteWallet.Core
     {
         Ready,
         Error,
+        SynchronizingWallet,
         SynchronizingBlockchain
     }
 }

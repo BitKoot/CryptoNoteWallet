@@ -24,6 +24,7 @@ namespace CryptoNoteWallet
 
         private List<string> DaemonLogLines { get; set; }
         private List<string> WalletLogLines { get; set; }
+        private BindingList<Transaction> Transactions { get; set; }
 
         private bool skipExitWrappers;
         private bool WalletHasBeenReady { get; set; }
@@ -31,6 +32,9 @@ namespace CryptoNoteWallet
         public MainWindow(string path, bool isNew)
         {
             InitializeComponent();
+
+            Transactions = new BindingList<Transaction>();
+            dgTransactions.DataSource = Transactions;
 
             int refreshInterval = int.Parse(ConfigurationManager.AppSettings["WalletRefreshInterval"]);
             int pingInterval = int.Parse(ConfigurationManager.AppSettings["DaemonPingInterval"]);
@@ -190,8 +194,11 @@ namespace CryptoNoteWallet
         /// <param name="transactions"></param>
         private void RefreshTransactions(IList<Transaction> transactions)
         {
-            BindingList<Transaction> datasource = new BindingList<Transaction>(transactions);
-            dgTransactions.DataSource = datasource;
+            foreach (var newTransaction in transactions
+                .Where(tr => !Transactions.Any(knownTransaction => knownTransaction.TransactionId == tr.TransactionId)))
+            {
+                Transactions.Add(newTransaction);
+            }
         }
 
         /// <summary>
@@ -212,13 +219,15 @@ namespace CryptoNoteWallet
         {
             WalletHasBeenReady = WalletHasBeenReady || status == WalletStatus.Ready;
 
+            lblStatus.Text = message;
+
             // Once the daemon has synced, ignore any synchronisation events.
-            if (WalletHasBeenReady && status == WalletStatus.SynchronizingBlockchain)
+            if (WalletHasBeenReady
+                && (status == WalletStatus.SynchronizingBlockchain || status == WalletStatus.SynchronizingWallet))
             {
                 return;
             }
 
-            lblStatus.Text = message;
             btnSend.Enabled = status == WalletStatus.Ready;
             btnStartSoloMining.Enabled = status == WalletStatus.Ready;
 

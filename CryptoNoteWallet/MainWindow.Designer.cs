@@ -314,6 +314,7 @@
             // 
             this.dgTransactions.AllowUserToAddRows = false;
             this.dgTransactions.AllowUserToDeleteRows = false;
+            this.dgTransactions.AllowUserToOrderColumns = true;
             this.dgTransactions.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.dgTransactions.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dgTransactions.CausesValidation = false;
@@ -322,7 +323,10 @@
             this.dgTransactions.Location = new System.Drawing.Point(3, 3);
             this.dgTransactions.Name = "dgTransactions";
             this.dgTransactions.ReadOnly = true;
+            this.dgTransactions.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+            this.dgTransactions.RowTemplate.DefaultCellStyle.Padding = new System.Windows.Forms.Padding(0, 0, 5, 0);
             this.dgTransactions.ShowCellErrors = false;
+            this.dgTransactions.ShowEditingIcon = false;
             this.dgTransactions.ShowRowErrors = false;
             this.dgTransactions.Size = new System.Drawing.Size(594, 309);
             this.dgTransactions.TabIndex = 0;

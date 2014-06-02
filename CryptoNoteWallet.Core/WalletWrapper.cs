@@ -198,6 +198,20 @@ namespace CryptoNoteWallet.Core
             {
                 UpdateStatus(WalletStatus.Error, "Can not connect to daemon");
             }
+            else if (Regex.IsMatch(line, "Height [0-9]+ of [0-9]+"))
+            {
+                Match match = Regex.Match(line, "Height ([0-9]+) of ([0-9]+)");
+                if (match.Success)
+                {
+                    UpdateStatus(
+                        WalletStatus.SynchronizingWallet, 
+                        string.Format("Updating wallet (block {0} of {1})", match.Groups[1], match.Groups[2]));
+                }
+            }
+            else if (line.Contains("Refresh done"))
+            {
+                UpdateStatus(WalletStatus.Ready, "Ready");
+            }
             else if (line.Contains("Error: failed to load wallet: invalid password"))
             {
                 SendError("Invalid password", true);
@@ -276,10 +290,8 @@ namespace CryptoNoteWallet.Core
 
                 isFetchingTransactions = true;
             }
-            else if (Regex.IsMatch(line, "Height [0-9]+ of [0-9]+")
-                || line.Contains("No incoming transfers")
+            else if (line.Contains("No incoming transfers")
                 || line.Contains("Starting refresh...")
-                || line.Contains("Refresh done")
                 || string.IsNullOrWhiteSpace(line))
             {
                 // Ignore these lines
