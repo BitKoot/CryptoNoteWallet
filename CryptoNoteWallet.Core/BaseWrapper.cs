@@ -20,7 +20,7 @@ namespace CryptoNoteWallet.Core
         protected Process WrapperProcess { get; set; }
         protected bool HandleLines { get; set; }
 
-        public EventHandler<WrapperEvent<string>> OutputReceived;
+        public EventHandler<WrapperEvent<LogLine>> OutputReceived;
         public EventHandler<WrapperErrorEvent> Error;
         public EventHandler<WrapperEvent<string>> Information;
         public EventHandler<WrapperStatusEvent> StatusChanged;
@@ -73,6 +73,15 @@ namespace CryptoNoteWallet.Core
 
                 WrapperProcess.Close();
             }
+        }
+
+        /// <summary>
+        /// Write a line to the standard input.
+        /// </summary>
+        /// <param name="line"></param>
+        public void WriteLine(string line)
+        {
+            WrapperProcess.StandardInput.WriteLine(line);
         }
 
         /// <summary>
@@ -141,21 +150,12 @@ namespace CryptoNoteWallet.Core
         /// <param name="lineIsHandled">Has the line been handled?</param>
         protected virtual void HandleLine(string line, bool isError, bool lineIsHandled = true)
         {
-            if (!lineIsHandled && OutputReceived != null)
+            if (OutputReceived != null)
             {
-                OutputReceived.Invoke(this, new WrapperEvent<string>(line));
+                OutputReceived.Invoke(this, new WrapperEvent<LogLine>(new LogLine(line, lineIsHandled)));
             }
 
             ReadNextLine(isError);
-        }
-
-        /// <summary>
-        /// Write a line to the standard input.
-        /// </summary>
-        /// <param name="line"></param>
-        protected void WriteLine(string line)
-        {
-            WrapperProcess.StandardInput.WriteLine(line);
         }
     }
 }

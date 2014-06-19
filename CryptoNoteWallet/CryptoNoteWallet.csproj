@@ -50,6 +50,12 @@
     <Compile Include="CreateWallet.Designer.cs">
       <DependentUpon>CreateWallet.cs</DependentUpon>
     </Compile>
+    <Compile Include="LogWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LogWindow.Designer.cs">
+      <DependentUpon>LogWindow.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoginPrompt.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -78,6 +84,9 @@
     </Compile>
     <EmbeddedResource Include="CreateWallet.resx">
       <DependentUpon>CreateWallet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LogWindow.resx">
+      <DependentUpon>LogWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoginPrompt.resx">
       <DependentUpon>LoginPrompt.cs</DependentUpon>

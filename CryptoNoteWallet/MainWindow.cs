@@ -22,8 +22,8 @@ namespace CryptoNoteWallet
         private WalletWrapper Wallet { get; set; }
         private MinerWrapper MinerManager { get; set; }
 
-        private List<string> DaemonLogLines { get; set; }
-        private List<string> WalletLogLines { get; set; }
+        private BindingList<LogLine> DaemonLogLines { get; set; }
+        private BindingList<LogLine> WalletLogLines { get; set; }
         private BindingList<Transaction> Transactions { get; set; }
 
         private bool skipExitWrappers;
@@ -60,19 +60,19 @@ namespace CryptoNoteWallet
             FillMiningPools();
 
             // Initialize and start daemon.
-            DaemonLogLines = new List<string>();
-            Daemon.OutputReceived += new EventHandler<WrapperEvent<string>>((s, e) => DispatchEvent(() => AddLogText(e.Data, DaemonLogLines, tbDaemonLog)));
+            DaemonLogLines = new BindingList<LogLine>();
+            Daemon.OutputReceived += new EventHandler<WrapperEvent<LogLine>>((s, e) => DispatchEvent(() => AddLogText(e.Data, DaemonLogLines)));
             Daemon.StatusChanged += new EventHandler<WrapperStatusEvent>((s, e) => DispatchEvent(() => SetStatus(e.Status, e.Message)));
             Daemon.ConnectionsCounted += new EventHandler<WrapperEvent<int>>((s, e) => DispatchEvent(() => SetConnectionCount(e.Data)));
             Daemon.UpdateSoloMiningHashRate += new EventHandler<WrapperEvent<decimal>>((s, e) => DispatchEvent(() => UpdateSoloMiningHashRate(e.Data)));
             Daemon.Start();
 
             // Initialize and start wallet client.
-            WalletLogLines = new List<string>();
+            WalletLogLines = new BindingList<LogLine>();
             Wallet.ReadyToLogin += new EventHandler<EventArgs>((s, e) => DispatchEvent(() => ShowLogin()));
             Wallet.StatusChanged += new EventHandler<WrapperStatusEvent>((s, e) => DispatchEvent(() => SetStatus(e.Status, e.Message)));
             Wallet.AddressReceived += new EventHandler<WrapperEvent<string>>((s, e) => DispatchEvent(() => SetAddress(e.Data)));
-            Wallet.OutputReceived += new EventHandler<WrapperEvent<string>>((s, e) => DispatchEvent(() => AddLogText(e.Data, WalletLogLines, tbWalletLog)));
+            Wallet.OutputReceived += new EventHandler<WrapperEvent<LogLine>>((s, e) => DispatchEvent(() => AddLogText(e.Data, WalletLogLines)));
             Wallet.BalanceUpdated += new EventHandler<WrapperBalanceEvent>((s, e) => DispatchEvent(() => SetBalance(e.Total, e.Unlocked)));
             Wallet.Error += new EventHandler<WrapperErrorEvent>((s, e) => DispatchEvent(() => ShowError(e.Message, e.ShouldExit)));
             Wallet.Information += new EventHandler<WrapperEvent<string>>((s, e) => DispatchEvent(() => ShowInformation(e.Data)));
@@ -261,29 +261,16 @@ namespace CryptoNoteWallet
         /// <summary>
         /// Update wallet log.
         /// </summary>
-        /// <param name="text"></param>
+        /// <param name="logLine"></param>
         /// <param name="logLines"></param>
-        /// <param name="textBox"></param>
-        /// <param name="scrollViewer"></param>
-        private void AddLogText(string text, IList<string> logLines, TextBox textBox)
+        private void AddLogText(LogLine logLine, IList<LogLine> logLines)
         {
-            while (logLines.Count >= 50)
+            while (logLines.Count >= 1000)
             {
                 logLines.RemoveAt(0);
             }
 
-            logLines.Add(text);
-
-            if (logLines.Count == 1)
-            {
-                textBox.Text = logLines.First();
-            }
-            else
-            {
-                textBox.Text = logLines.Aggregate((l1, l2) => l1 + Environment.NewLine + l2);
-                textBox.AppendText(Environment.NewLine); // Hack: make sure scroll to bottom works
-                textBox.ScrollToCaret();
-            }
+            logLines.Add(logLine);
         }
 
         /// <summary>
@@ -395,6 +382,27 @@ namespace CryptoNoteWallet
 
                     btnStartPoolMining.Text = string.Format("Stop miners ({0})", MinerManager.Processes.Count);
                 }
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void showWalletLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var logWindow = new LogWindow(WalletLogLines, Wallet))
+            {
+                logWindow.ShowDialog();
+            }
+        }
+
+        private void showDaemonLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var logWindow = new LogWindow(DaemonLogLines, Daemon))
+            {
+                logWindow.ShowDialog();
             }
         }
     }
