@@ -1,4 +1,4 @@
-﻿namespace CryptoNoteWallet
+﻿namespace MoneroWallet
 {
     partial class MainWindow
     {
@@ -37,46 +37,46 @@
             this.lblConnections = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.logsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.logsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showWalletLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showDaemonLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.lbMiningPools = new System.Windows.Forms.ComboBox();
-            this.tbPoolLogin = new System.Windows.Forms.TextBox();
-            this.tbPoolPassword = new System.Windows.Forms.TextBox();
-            this.tbPoolMinerThreads = new System.Windows.Forms.NumericUpDown();
-            this.chkShowPoolMinerWindows = new System.Windows.Forms.CheckBox();
             this.btnStartPoolMining = new System.Windows.Forms.Button();
+            this.chkShowPoolMinerWindows = new System.Windows.Forms.CheckBox();
+            this.tbPoolMinerThreads = new System.Windows.Forms.NumericUpDown();
+            this.tbPoolPassword = new System.Windows.Forms.TextBox();
+            this.tbPoolLogin = new System.Windows.Forms.TextBox();
+            this.lbMiningPools = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.label9 = new System.Windows.Forms.Label();
-            this.tbSoloMinerThreads = new System.Windows.Forms.NumericUpDown();
             this.btnStartSoloMining = new System.Windows.Forms.Button();
+            this.tbSoloMinerThreads = new System.Windows.Forms.NumericUpDown();
+            this.label9 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dgTransactions = new System.Windows.Forms.DataGridView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.tbSendAddress = new System.Windows.Forms.TextBox();
-            this.tbPaymentId = new System.Windows.Forms.TextBox();
-            this.tbSendAmount = new System.Windows.Forms.NumericUpDown();
-            this.tbSendMixin = new System.Windows.Forms.NumericUpDown();
             this.btnSend = new System.Windows.Forms.Button();
+            this.tbSendMixin = new System.Windows.Forms.NumericUpDown();
+            this.tbSendAmount = new System.Windows.Forms.NumericUpDown();
+            this.tbPaymentId = new System.Windows.Forms.TextBox();
+            this.tbSendAddress = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.lblBalance = new System.Windows.Forms.Label();
-            this.lblUnconfirmed = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.btnCopyAddress = new System.Windows.Forms.Button();
             this.lblAddress = new System.Windows.Forms.TextBox();
+            this.btnCopyAddress = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.lblUnconfirmed = new System.Windows.Forms.Label();
+            this.lblBalance = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -87,8 +87,8 @@
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgTransactions)).BeginInit();
             this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbSendAmount)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbSendMixin)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbSendAmount)).BeginInit();
             this.tabPage1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.SuspendLayout();
@@ -157,6 +157,13 @@
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
             // logsToolStripMenuItem
             // 
             this.logsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -165,13 +172,6 @@
             this.logsToolStripMenuItem.Name = "logsToolStripMenuItem";
             this.logsToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.logsToolStripMenuItem.Text = "Logs";
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // showWalletLogToolStripMenuItem
             // 
@@ -208,72 +208,24 @@
             this.tabPage5.Text = "Pool Mining";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
-            // label2
+            // btnStartPoolMining
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 21);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(251, 16);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Pool address (including portnumber):";
+            this.btnStartPoolMining.Location = new System.Drawing.Point(439, 168);
+            this.btnStartPoolMining.Name = "btnStartPoolMining";
+            this.btnStartPoolMining.Size = new System.Drawing.Size(153, 27);
+            this.btnStartPoolMining.TabIndex = 5;
+            this.btnStartPoolMining.Text = "Start mining";
+            this.btnStartPoolMining.UseVisualStyleBackColor = true;
+            this.btnStartPoolMining.Click += new System.EventHandler(this.btnStartPoolMiningClick);
             // 
-            // label4
+            // chkShowPoolMinerWindows
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 50);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(178, 16);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "Pool login (your address):";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(8, 80);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(108, 16);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "Pool password:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(8, 111);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(136, 16);
-            this.label7.TabIndex = 0;
-            this.label7.Text = "Number of threads:";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(8, 143);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(151, 16);
-            this.label8.TabIndex = 0;
-            this.label8.Text = "Show miner windows:";
-            // 
-            // lbMiningPools
-            // 
-            this.lbMiningPools.FormattingEnabled = true;
-            this.lbMiningPools.Location = new System.Drawing.Point(265, 18);
-            this.lbMiningPools.Name = "lbMiningPools";
-            this.lbMiningPools.Size = new System.Drawing.Size(327, 24);
-            this.lbMiningPools.TabIndex = 1;
-            // 
-            // tbPoolLogin
-            // 
-            this.tbPoolLogin.Location = new System.Drawing.Point(265, 50);
-            this.tbPoolLogin.Name = "tbPoolLogin";
-            this.tbPoolLogin.Size = new System.Drawing.Size(327, 23);
-            this.tbPoolLogin.TabIndex = 2;
-            // 
-            // tbPoolPassword
-            // 
-            this.tbPoolPassword.Location = new System.Drawing.Point(265, 80);
-            this.tbPoolPassword.Name = "tbPoolPassword";
-            this.tbPoolPassword.Size = new System.Drawing.Size(327, 23);
-            this.tbPoolPassword.TabIndex = 2;
+            this.chkShowPoolMinerWindows.AutoSize = true;
+            this.chkShowPoolMinerWindows.Location = new System.Drawing.Point(265, 143);
+            this.chkShowPoolMinerWindows.Name = "chkShowPoolMinerWindows";
+            this.chkShowPoolMinerWindows.Size = new System.Drawing.Size(15, 14);
+            this.chkShowPoolMinerWindows.TabIndex = 4;
+            this.chkShowPoolMinerWindows.UseVisualStyleBackColor = true;
             // 
             // tbPoolMinerThreads
             // 
@@ -292,24 +244,72 @@
             0,
             0});
             // 
-            // chkShowPoolMinerWindows
+            // tbPoolPassword
             // 
-            this.chkShowPoolMinerWindows.AutoSize = true;
-            this.chkShowPoolMinerWindows.Location = new System.Drawing.Point(265, 143);
-            this.chkShowPoolMinerWindows.Name = "chkShowPoolMinerWindows";
-            this.chkShowPoolMinerWindows.Size = new System.Drawing.Size(15, 14);
-            this.chkShowPoolMinerWindows.TabIndex = 4;
-            this.chkShowPoolMinerWindows.UseVisualStyleBackColor = true;
+            this.tbPoolPassword.Location = new System.Drawing.Point(265, 80);
+            this.tbPoolPassword.Name = "tbPoolPassword";
+            this.tbPoolPassword.Size = new System.Drawing.Size(327, 23);
+            this.tbPoolPassword.TabIndex = 2;
             // 
-            // btnStartPoolMining
+            // tbPoolLogin
             // 
-            this.btnStartPoolMining.Location = new System.Drawing.Point(439, 168);
-            this.btnStartPoolMining.Name = "btnStartPoolMining";
-            this.btnStartPoolMining.Size = new System.Drawing.Size(153, 27);
-            this.btnStartPoolMining.TabIndex = 5;
-            this.btnStartPoolMining.Text = "Start mining";
-            this.btnStartPoolMining.UseVisualStyleBackColor = true;
-            this.btnStartPoolMining.Click += new System.EventHandler(this.btnStartPoolMiningClick);
+            this.tbPoolLogin.Location = new System.Drawing.Point(265, 50);
+            this.tbPoolLogin.Name = "tbPoolLogin";
+            this.tbPoolLogin.Size = new System.Drawing.Size(327, 23);
+            this.tbPoolLogin.TabIndex = 2;
+            // 
+            // lbMiningPools
+            // 
+            this.lbMiningPools.FormattingEnabled = true;
+            this.lbMiningPools.Location = new System.Drawing.Point(265, 18);
+            this.lbMiningPools.Name = "lbMiningPools";
+            this.lbMiningPools.Size = new System.Drawing.Size(327, 24);
+            this.lbMiningPools.TabIndex = 1;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(8, 143);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(151, 16);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Show miner windows:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(8, 111);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(136, 16);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "Number of threads:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(8, 80);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(108, 16);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Pool password:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(8, 50);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(178, 16);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Pool login (your address):";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(8, 21);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(251, 16);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Pool address (including portnumber):";
             // 
             // tabPage4
             // 
@@ -324,14 +324,15 @@
             this.tabPage4.Text = "Solo Mining";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // label9
+            // btnStartSoloMining
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(8, 20);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(136, 16);
-            this.label9.TabIndex = 4;
-            this.label9.Text = "Number of threads:";
+            this.btnStartSoloMining.Location = new System.Drawing.Point(430, 53);
+            this.btnStartSoloMining.Name = "btnStartSoloMining";
+            this.btnStartSoloMining.Size = new System.Drawing.Size(162, 28);
+            this.btnStartSoloMining.TabIndex = 6;
+            this.btnStartSoloMining.Text = "Start mining";
+            this.btnStartSoloMining.UseVisualStyleBackColor = true;
+            this.btnStartSoloMining.Click += new System.EventHandler(this.btnStartSoloMiningClick);
             // 
             // tbSoloMinerThreads
             // 
@@ -350,15 +351,14 @@
             0,
             0});
             // 
-            // btnStartSoloMining
+            // label9
             // 
-            this.btnStartSoloMining.Location = new System.Drawing.Point(430, 53);
-            this.btnStartSoloMining.Name = "btnStartSoloMining";
-            this.btnStartSoloMining.Size = new System.Drawing.Size(162, 28);
-            this.btnStartSoloMining.TabIndex = 6;
-            this.btnStartSoloMining.Text = "Start mining";
-            this.btnStartSoloMining.UseVisualStyleBackColor = true;
-            this.btnStartSoloMining.Click += new System.EventHandler(this.btnStartSoloMiningClick);
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(8, 20);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(136, 16);
+            this.label9.TabIndex = 4;
+            this.label9.Text = "Number of threads:";
             // 
             // tabPage3
             // 
@@ -411,55 +411,22 @@
             this.tabPage2.Text = "Transfer";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // label10
+            // btnSend
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(8, 26);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(144, 16);
-            this.label10.TabIndex = 0;
-            this.label10.Text = "Destination address:";
+            this.btnSend.Location = new System.Drawing.Point(516, 141);
+            this.btnSend.Name = "btnSend";
+            this.btnSend.Size = new System.Drawing.Size(75, 23);
+            this.btnSend.TabIndex = 3;
+            this.btnSend.Text = "Send";
+            this.btnSend.UseVisualStyleBackColor = true;
+            this.btnSend.Click += new System.EventHandler(this.SendClick);
             // 
-            // label11
+            // tbSendMixin
             // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(8, 59);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(64, 16);
-            this.label11.TabIndex = 0;
-            this.label11.Text = "Amount:";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(8, 87);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(89, 16);
-            this.label12.TabIndex = 0;
-            this.label12.Text = "Mixin count:";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(8, 114);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(87, 16);
-            this.label13.TabIndex = 0;
-            this.label13.Text = "Payment id:";
-            // 
-            // tbSendAddress
-            // 
-            this.tbSendAddress.Location = new System.Drawing.Point(160, 19);
-            this.tbSendAddress.Name = "tbSendAddress";
-            this.tbSendAddress.Size = new System.Drawing.Size(432, 23);
-            this.tbSendAddress.TabIndex = 1;
-            // 
-            // tbPaymentId
-            // 
-            this.tbPaymentId.Location = new System.Drawing.Point(160, 111);
-            this.tbPaymentId.Name = "tbPaymentId";
-            this.tbPaymentId.Size = new System.Drawing.Size(432, 23);
-            this.tbPaymentId.TabIndex = 1;
+            this.tbSendMixin.Location = new System.Drawing.Point(160, 80);
+            this.tbSendMixin.Name = "tbSendMixin";
+            this.tbSendMixin.Size = new System.Drawing.Size(120, 23);
+            this.tbSendMixin.TabIndex = 2;
             // 
             // tbSendAmount
             // 
@@ -479,22 +446,55 @@
             this.tbSendAmount.Size = new System.Drawing.Size(120, 23);
             this.tbSendAmount.TabIndex = 2;
             // 
-            // tbSendMixin
+            // tbPaymentId
             // 
-            this.tbSendMixin.Location = new System.Drawing.Point(160, 80);
-            this.tbSendMixin.Name = "tbSendMixin";
-            this.tbSendMixin.Size = new System.Drawing.Size(120, 23);
-            this.tbSendMixin.TabIndex = 2;
+            this.tbPaymentId.Location = new System.Drawing.Point(160, 111);
+            this.tbPaymentId.Name = "tbPaymentId";
+            this.tbPaymentId.Size = new System.Drawing.Size(432, 23);
+            this.tbPaymentId.TabIndex = 1;
             // 
-            // btnSend
+            // tbSendAddress
             // 
-            this.btnSend.Location = new System.Drawing.Point(516, 141);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(75, 23);
-            this.btnSend.TabIndex = 3;
-            this.btnSend.Text = "Send";
-            this.btnSend.UseVisualStyleBackColor = true;
-            this.btnSend.Click += new System.EventHandler(this.SendClick);
+            this.tbSendAddress.Location = new System.Drawing.Point(160, 19);
+            this.tbSendAddress.Name = "tbSendAddress";
+            this.tbSendAddress.Size = new System.Drawing.Size(432, 23);
+            this.tbSendAddress.TabIndex = 1;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(8, 114);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(87, 16);
+            this.label13.TabIndex = 0;
+            this.label13.Text = "Payment id:";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(8, 87);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(89, 16);
+            this.label12.TabIndex = 0;
+            this.label12.Text = "Mixin count:";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(8, 59);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(64, 16);
+            this.label11.TabIndex = 0;
+            this.label11.Text = "Amount:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(8, 26);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(144, 16);
+            this.label10.TabIndex = 0;
+            this.label10.Text = "Destination address:";
             // 
             // tabPage1
             // 
@@ -514,61 +514,6 @@
             this.tabPage1.Text = "Wallet";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 31);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 16);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Balance:";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 54);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(95, 16);
-            this.label3.TabIndex = 0;
-            this.label3.Text = "Unconfirmed:";
-            // 
-            // lblBalance
-            // 
-            this.lblBalance.AutoSize = true;
-            this.lblBalance.Location = new System.Drawing.Point(112, 31);
-            this.lblBalance.Name = "lblBalance";
-            this.lblBalance.Size = new System.Drawing.Size(51, 16);
-            this.lblBalance.TabIndex = 1;
-            this.lblBalance.Text = "X MRO";
-            // 
-            // lblUnconfirmed
-            // 
-            this.lblUnconfirmed.AutoSize = true;
-            this.lblUnconfirmed.Location = new System.Drawing.Point(112, 54);
-            this.lblUnconfirmed.Name = "lblUnconfirmed";
-            this.lblUnconfirmed.Size = new System.Drawing.Size(51, 16);
-            this.lblUnconfirmed.TabIndex = 1;
-            this.lblUnconfirmed.Text = "X MRO";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(295, 31);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(66, 16);
-            this.label5.TabIndex = 2;
-            this.label5.Text = "Address:";
-            // 
-            // btnCopyAddress
-            // 
-            this.btnCopyAddress.Location = new System.Drawing.Point(298, 51);
-            this.btnCopyAddress.Name = "btnCopyAddress";
-            this.btnCopyAddress.Size = new System.Drawing.Size(63, 23);
-            this.btnCopyAddress.TabIndex = 5;
-            this.btnCopyAddress.Text = "Copy";
-            this.btnCopyAddress.UseVisualStyleBackColor = true;
-            this.btnCopyAddress.Click += new System.EventHandler(this.btnCopyAddressClick);
-            // 
             // lblAddress
             // 
             this.lblAddress.BackColor = System.Drawing.SystemColors.Window;
@@ -581,6 +526,61 @@
             this.lblAddress.Size = new System.Drawing.Size(225, 95);
             this.lblAddress.TabIndex = 6;
             this.lblAddress.Text = "Initializing";
+            // 
+            // btnCopyAddress
+            // 
+            this.btnCopyAddress.Location = new System.Drawing.Point(298, 51);
+            this.btnCopyAddress.Name = "btnCopyAddress";
+            this.btnCopyAddress.Size = new System.Drawing.Size(63, 23);
+            this.btnCopyAddress.TabIndex = 5;
+            this.btnCopyAddress.Text = "Copy";
+            this.btnCopyAddress.UseVisualStyleBackColor = true;
+            this.btnCopyAddress.Click += new System.EventHandler(this.btnCopyAddressClick);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(295, 31);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(66, 16);
+            this.label5.TabIndex = 2;
+            this.label5.Text = "Address:";
+            // 
+            // lblUnconfirmed
+            // 
+            this.lblUnconfirmed.AutoSize = true;
+            this.lblUnconfirmed.Location = new System.Drawing.Point(112, 54);
+            this.lblUnconfirmed.Name = "lblUnconfirmed";
+            this.lblUnconfirmed.Size = new System.Drawing.Size(50, 16);
+            this.lblUnconfirmed.TabIndex = 1;
+            this.lblUnconfirmed.Text = "X XMR";
+            // 
+            // lblBalance
+            // 
+            this.lblBalance.AutoSize = true;
+            this.lblBalance.Location = new System.Drawing.Point(112, 31);
+            this.lblBalance.Name = "lblBalance";
+            this.lblBalance.Size = new System.Drawing.Size(50, 16);
+            this.lblBalance.TabIndex = 1;
+            this.lblBalance.Text = "X XMR";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(8, 54);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(95, 16);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "Unconfirmed:";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(10, 31);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(65, 16);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Balance:";
             // 
             // tabControl1
             // 
@@ -609,7 +609,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "MainWindow";
-            this.Text = "CryptoNote Wallet";
+            this.Text = "Monero Wallet";
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
@@ -624,8 +624,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgTransactions)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbSendAmount)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbSendMixin)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tbSendAmount)).EndInit();
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabControl1.ResumeLayout(false);

@@ -1,4 +1,4 @@
-﻿namespace CryptoNoteWallet
+﻿namespace MoneroWallet
 {
     partial class WalletPicker
     {

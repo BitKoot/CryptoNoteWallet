@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CryptoNoteWallet.Core
+namespace MoneroWallet.Core
 {
     public class WrapperStatusEvent : EventArgs
     {

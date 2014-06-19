@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace CryptoNoteWallet.Core
+namespace MoneroWallet.Core
 {
     /// <summary>
     /// Base class for wrappers around command line programs.

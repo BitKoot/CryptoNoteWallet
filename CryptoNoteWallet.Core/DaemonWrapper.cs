@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace CryptoNoteWallet.Core
+namespace MoneroWallet.Core
 {
     /// <summary>
     /// Wraps the daemon command line application. Sends command and interprets output.

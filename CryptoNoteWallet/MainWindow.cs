@@ -1,4 +1,4 @@
-﻿using CryptoNoteWallet.Core;
+﻿using MoneroWallet.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CryptoNoteWallet
+namespace MoneroWallet
 {
     public partial class MainWindow : Form
     {
@@ -184,8 +184,8 @@ namespace CryptoNoteWallet
         /// <param name="unlocked"></param>
         private void SetBalance(decimal total, decimal unlocked)
         {
-            lblBalance.Text = string.Format("{0} MRO", unlocked);
-            lblUnconfirmed.Text = string.Format("{0} MRO", total);
+            lblBalance.Text = string.Format("{0} XMR", unlocked);
+            lblUnconfirmed.Text = string.Format("{0} XMR", total);
         }
 
         /// <summary>

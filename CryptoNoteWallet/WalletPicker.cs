@@ -1,4 +1,4 @@
-﻿using CryptoNoteWallet.Properties;
+﻿using MoneroWallet.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CryptoNoteWallet
+namespace MoneroWallet
 {
     public partial class WalletPicker : Form
     {
