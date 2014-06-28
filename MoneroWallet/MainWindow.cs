@@ -394,7 +394,7 @@ namespace MoneroWallet
         {
             using (var logWindow = new LogWindow(WalletLogLines, Wallet))
             {
-                logWindow.ShowDialog();
+                logWindow.ShowDialog(this);
             }
         }
 
@@ -402,7 +402,15 @@ namespace MoneroWallet
         {
             using (var logWindow = new LogWindow(DaemonLogLines, Daemon))
             {
-                logWindow.ShowDialog();
+                logWindow.ShowDialog(this);
+            }
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var aboutWindow = new About(Wallet.WalletVersion, Wallet.BlockHeight))
+            {
+                aboutWindow.ShowDialog(this);
             }
         }
     }

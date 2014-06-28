@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogWindow));
             this.chkHideHandledLines = new System.Windows.Forms.CheckBox();
             this.btnSend = new System.Windows.Forms.Button();
             this.tbCommand = new System.Windows.Forms.TextBox();
@@ -88,7 +89,10 @@
             this.Controls.Add(this.tbCommand);
             this.Controls.Add(this.btnSend);
             this.Controls.Add(this.chkHideHandledLines);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimizeBox = false;
             this.Name = "LogWindow";
+            this.ShowInTaskbar = false;
             this.Text = "Log";
             this.ResumeLayout(false);
             this.PerformLayout();

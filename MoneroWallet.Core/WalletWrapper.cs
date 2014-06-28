@@ -21,6 +21,9 @@ namespace MoneroWallet.Core
 
         public Timer RefreshTimer { get; set; }
 
+        public string WalletVersion { get; set; }
+        public long BlockHeight { get; set; }
+
         public EventHandler<EventArgs> ReadyToLogin;
         public EventHandler<WrapperEvent<string>> AddressReceived;
         public EventHandler<WrapperBalanceEvent> BalanceUpdated;
@@ -32,6 +35,7 @@ namespace MoneroWallet.Core
         {
             Transactions = new List<Transaction>();
             IsNew = isNew;
+            WalletVersion = "unknown";
 
             RefreshTimer = new Timer(refreshInterval);
             RefreshTimer.Elapsed += (s, e) => Refresh();
@@ -183,6 +187,12 @@ namespace MoneroWallet.Core
             }
             else if (line.Contains("bitmonero wallet"))
             {
+                Match match = Regex.Match(line, "bitmonero wallet v([0-9\\.\\(\\)]+)");
+                if (match.Success)
+                {
+                    WalletVersion = match.Groups[1].Value;
+                }
+
                 if (ReadyToLogin != null)
                 {
                     ReadyToLogin.Invoke(this, null);
@@ -203,6 +213,12 @@ namespace MoneroWallet.Core
                 Match match = Regex.Match(line, "Height ([0-9]+) of ([0-9]+)");
                 if (match.Success)
                 {
+                    long blockHeight = 0;
+                    if (long.TryParse(match.Groups[2].Value, out blockHeight))
+                    {
+                        BlockHeight = blockHeight;
+                    }
+
                     UpdateStatus(
                         WalletStatus.SynchronizingWallet, 
                         string.Format("Updating wallet (block {0} of {1})", match.Groups[1], match.Groups[2]));
